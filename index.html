@@ -411,13 +411,31 @@
             document.getElementById('input-status').value = document.getElementById('display-status').innerText;
         }
     }
-    function saveProfileText() {
-        const prof = db.get('profile', {}); prof.name = document.getElementById('input-name').value; prof.status = document.getElementById('input-status').value;
-        db.set('profile', prof); renderProfile(); toggleEdit();
+        function saveProfileText() {
+        const newName = document.getElementById('input-name').value || "Carat";
+        const newStatus = document.getElementById('input-status').value || "Say the name!";
+        
+        // 取得舊有資料並覆蓋文字部分
+        const prof = db.get('profile', { avatar: "", bg: "" });
+        prof.name = newName;
+        prof.status = newStatus;
+        
+        // 存回資料庫
+        db.set('profile', prof); 
+        
+        // 立即更新 UI 顯示
+        renderProfile(); 
+        
+        // 關閉輸入框
+        document.getElementById('edit-fields').style.display = 'none';
+        
+        // 確保畫面停留在主頁並顯示成功訊息（可選）
+        window.scrollTo(0, 0);
     }
 
     function renderWeekTable() {
         const table = document.getElementById('week-table-display');
+        if(!table) return; // 防止在非日記頁報錯
         table.innerHTML = "";
         const days = ['日', '一', '二', '三', '四', '五', '六'];
         const tempDate = new Date(currentWeekStart);
@@ -428,14 +446,18 @@
         }
         document.getElementById('cal-month-display').innerText = `${currentWeekStart.getFullYear()}/${currentWeekStart.getMonth()+1}`;
     }
+
     function changeWeek(dir) { currentWeekStart.setDate(currentWeekStart.getDate() + (dir*7)); renderWeekTable(); }
 
     function showPage(id) {
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const navIdx = { 'finance': 1, 'profile': 2, 'diary': 3 };
-        document.querySelector(`.nav-item:nth-child(${navIdx[id]})`).classList.add('active');
+        
+        // 修正導覽列啟動狀態
+        const navMap = { 'finance': 0, 'profile': 1, 'diary': 2 };
+        document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
+        window.scrollTo(0, 0);
     }
 
     window.onload = init;
