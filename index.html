@@ -17,37 +17,45 @@
         }
         .app-container { max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); min-height: 100vh; position: relative; padding-bottom: 90px; }
         
-        /* 頁面切換 */
+        /* 分頁切換 */
         .page-section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 通用分類標頭 */
         .section-header { background-color: var(--serenity); color: white; padding: 6px 18px; border-radius: 50px; display: inline-block; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(146, 168, 209, 0.3); }
-        
-        /* 詳細頁面專用樣式 */
-        .detail-header { display: flex; align-items: center; margin-bottom: 30px; }
-        .back-btn { font-size: 1.4rem; color: white; cursor: pointer; margin-right: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .detail-member-info { display: flex; align-items: center; }
-        .detail-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; margin-right: 12px; object-fit: cover; background: var(--serenity); display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        #detail-title { color: white; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0; font-size: 1.5rem; }
+        .svt-card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(146, 168, 209, 0.2); position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: none; padding: 8px 20px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .text-serenity { color: var(--serenity) !important; }
 
-        .detail-category-tag { background-color: var(--serenity); color: white; padding: 6px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: bold; margin-bottom: 15px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .detail-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; border-left: 5px solid var(--rose-quartz); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-        .detail-date { font-size: 0.8rem; color: var(--serenity); font-weight: bold; display: block; margin-bottom: 4px; }
+        /* 編輯小圖示 */
+        .edit-icon { position: absolute; top: 12px; right: 12px; color: var(--serenity); cursor: pointer; font-size: 0.9rem; opacity: 0.6; transition: 0.3s; }
+        .edit-icon:hover { opacity: 1; transform: scale(1.1); }
 
-        /* 個人主頁 */
-        .profile-header { height: 160px; background-color: #eee; background-position: center; background-size: cover; position: relative; border-bottom: 4px solid white; cursor: pointer; }
-        .profile-avatar { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: #fff; object-fit: cover; z-index: 10; cursor: pointer; }
-        
-        .svt-card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(146, 168, 209, 0.2); }
-        .member-avatar-sm { width: 38px; height: 38px; border-radius: 50%; margin-right: 12px; border: 1.5px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; cursor: pointer; }
+        /* 主頁與頭像樣式 */
+        .profile-header { height: 160px; background: linear-gradient(45deg, var(--rose-quartz), #f8d7d7); background-position: center; background-size: cover; position: relative; border-bottom: 4px solid white; cursor: pointer; }
+        .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: linear-gradient(135deg, var(--serenity), #b0c4de); z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-container i { color: white; font-size: 2rem; }
+
+        /* 列表 */
+        .member-avatar-sm { width: 38px; height: 38px; border-radius: 50%; margin-right: 12px; border: 1.5px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
         .member-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-        .member-name-btn { cursor: pointer; color: var(--serenity); border: none; background: none; padding: 0; transition: 0.2s; font-weight: 500; }
-
-        .gem-rating { font-size: 0.9rem; color: #eee; cursor: pointer; margin: 0 2px; }
+        .gem-rating { font-size: 0.85rem; color: #eee; cursor: pointer; margin: 0 2px; }
         .gem-rating.active { color: var(--serenity); }
-        .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; }
+        .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; transition: 0.3s; }
+        .reset-btn:hover { color: var(--rose-quartz); transform: rotate(180deg); }
+
+        /* 記帳頁成員標籤 */
+        .member-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #fdfdfd; padding: 12px; border-radius: 12px; border: 1px solid #eee; max-height: 160px; overflow-y: auto; }
+        .member-tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--serenity); color: var(--serenity); cursor: pointer; transition: 0.2s; }
+        .member-tag.active { background: var(--serenity); color: white; }
+
+        /* 詳情頁樣式 */
+        .detail-header { display: flex; align-items: center; margin-bottom: 25px; padding-top: 10px; }
+        .back-btn { font-size: 1.4rem; color: white; cursor: pointer; margin-right: 15px; }
+        .detail-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; margin-right: 12px; object-fit: cover; background: var(--serenity); display: flex; align-items: center; justify-content: center; color: white; }
+        #detail-title { color: white; font-weight: bold; margin: 0; font-size: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .detail-item { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; border-left: 5px solid var(--rose-quartz); font-size: 0.9rem; }
 
         /* 導覽列 */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; align-items: center; padding: 8px 0; border-top: 1px solid #eee; z-index: 1000; height: 75px; }
@@ -64,76 +72,80 @@
 
     <section id="page-profile" class="page-section active" style="padding:0;">
         <div id="prof-bg" class="profile-header" onclick="document.getElementById('bg-trigger').click()">
-            <img id="prof-avatar-img" src="https://via.placeholder.com/90" class="profile-avatar" onclick="event.stopPropagation(); document.getElementById('av-trigger').click()">
+            <div class="profile-avatar-container" onclick="event.stopPropagation(); document.getElementById('av-trigger').click()">
+                <div id="prof-avatar-content"><i class="fas fa-gem"></i></div>
+            </div>
         </div>
-        
         <div class="p-4 bg-white shadow-sm mb-3" style="padding-top: 50px !important;">
             <div class="d-flex justify-content-between align-items-center">
-                <div id="text-view">
+                <div>
                     <h4 id="display-name" class="fw-bold m-0 text-serenity">Carat</h4>
-                    <p id="display-status" class="text-muted small mb-0">say the name!Seventeen!</p>
+                    <p id="display-status" class="text-muted small mb-0">say the name!</p>
                 </div>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="toggleEdit()">編輯</button>
             </div>
-            
             <div id="edit-fields" style="display:none;" class="mt-3 p-3 bg-light rounded shadow-inner">
-                <div class="mb-2">
-                    <label class="small text-muted">暱稱</label>
-                    <input type="text" id="input-name" class="form-control form-control-sm">
-                </div>
-                <div class="mb-2">
-                    <label class="small text-muted">狀態消息</label>
-                    <input type="text" id="input-status" class="form-control form-control-sm">
-                </div>
-                <button class="btn btn-sm btn-svt w-100 mt-2" onclick="saveProfileText()" style="background:var(--serenity); color:white;">完成儲存</button>
+                <input type="text" id="input-name" class="form-control form-control-sm mb-2" placeholder="暱稱">
+                <input type="text" id="input-status" class="form-control form-control-sm mb-2" placeholder="狀態消息">
+                <button class="btn btn-sm btn-svt w-100" onclick="saveProfileText()">完成儲存</button>
             </div>
         </div>
-
         <div class="px-3">
-            <div class="section-header">成員列表</div>
+            <div class="section-header">列表</div>
             <div id="member-ratings"></div>
         </div>
     </section>
 
-    <section id="page-member-detail" class="page-section">
-        <div class="detail-header">
-            <i class="fas fa-chevron-left back-btn" onclick="showPage('profile')"></i>
-            <div class="detail-member-info">
-                <div id="detail-member-avatar-container"></div>
-                <h3 id="detail-title"></h3>
+    <section id="page-finance" class="page-section">
+        <div class="section-header">記帳</div>
+        <div class="svt-card" id="finance-form">
+            <input type="hidden" id="edit-fin-id" value="">
+            
+            <label class="small text-muted mb-1">日期</label>
+            <input type="date" id="fin-date" class="form-control mb-3">
+            
+            <label class="small text-muted mb-1">成員 (可多選)</label>
+            <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
+            
+            <label class="small text-muted mb-1">類別</label>
+            <select id="fin-category" class="form-select mb-3">
+                <option value="專輯">專輯</option><option value="小卡">小卡</option><option value="周邊">周邊</option><option value="其他">其他</option>
+            </select>
+            
+            <label class="small text-muted mb-1">金額</label>
+            <div class="input-group mb-3">
+                <select id="fin-currency" class="form-select" style="max-width: 90px; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                    <option value="TWD">台幣</option><option value="KRW">韓元</option><option value="JPY">日幣</option>
+                </select>
+                <input type="number" id="fin-amt" class="form-control" placeholder="輸入金額" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
             </div>
+            <button class="btn btn-svt" id="btn-save-finance" onclick="addFinance()">儲存</button>
         </div>
-        <div class="mb-5">
-            <div class="detail-category-tag">相關記帳</div>
-            <div id="detail-finance-list"></div>
-        </div>
-        <div>
-            <div class="detail-category-tag">相關日記</div>
-            <div id="detail-diary-list"></div>
-        </div>
+        <div id="list-finance"></div>
     </section>
 
-    <section id="page-finance" class="page-section"><div class="section-header">記帳</div></section>
-    <section id="page-diary" class="page-section"><div class="section-header">日記</div></section>
-    <section id="page-translate" class="page-section"><div class="section-header">翻譯</div></section>
-    <section id="page-album" class="page-section"><div class="section-header">卡冊</div></section>
+    <section id="page-member-detail" class="page-section">
+        <div class="detail-header">
+            <i class="fas fa-arrow-left back-btn" onclick="showPage('profile')"></i>
+            <div id="detail-member-info" class="d-flex align-items-center"></div>
+        </div>
+        <div class="section-header" style="font-size: 0.8rem;">相關記帳紀錄</div>
+        <div id="detail-finance-list"></div>
+    </section>
 
     <nav class="bottom-nav">
         <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i><span>記帳</span></div>
-        <div class="nav-item" onclick="showPage('diary')"><i class="fas fa-book"></i><span>日記</span></div>
         <div class="nav-item active" onclick="showPage('profile')" style="margin-top:-25px;">
             <div style="width:55px; height:55px; border-radius:50%; background:var(--serenity); color:white; display:flex; align-items:center; justify-content:center; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.1);"><i class="fas fa-gem" style="margin:0; font-size:1.4rem;"></i></div>
         </div>
         <div class="nav-item" onclick="showPage('translate')"><i class="fas fa-language"></i><span>翻譯</span></div>
-        <div class="nav-item" onclick="showPage('album')"><i class="fas fa-images"></i><span>卡冊</span></div>
     </nav>
 </div>
 
 <script>
     const members = ["S.COUPS", "JEONGHAN", "JOSHUA", "JUN", "HOSHI", "WONWOO", "WOOZI", "THE 8", "MINGYU", "DK", "SEUNGKWAN", "VERNON", "DINO"];
-    const KEY_PREFIX = 'SVT_APP_DATA_V7';
+    const KEY_PREFIX = 'SVT_V9_STABLE';
 
-    // 核心資料管理工具
     const db = {
         get: (key, def) => JSON.parse(localStorage.getItem(`${KEY_PREFIX}_${key}`)) || def,
         set: (key, val) => localStorage.setItem(`${KEY_PREFIX}_${key}`, JSON.stringify(val))
@@ -141,95 +153,89 @@
 
     let targetMember = "";
 
-    // 1. 初始化渲染：讀取所有資料並更新 DOM
-    function initProfile() {
-        const prof = db.get('profile', { 
-            name: "Carat", 
-            status: "say the name!Seventeen!", 
-            avatar: "", 
-            bg: "" 
+    function init() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fin-date').value = today;
+        document.getElementById('fin-member-multi').innerHTML = members.map(m => 
+            `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`
+        ).join('');
+        renderProfile();
+        renderFinance();
+    }
+
+    // --- 記帳邏輯 (已替換為截取版本) ---
+    function addFinance() {
+        const editId = document.getElementById('edit-fin-id').value;
+        const date = document.getElementById('fin-date').value;
+        const cat = document.getElementById('fin-category').value;
+        const amt = document.getElementById('fin-amt').value;
+        const cur = document.getElementById('fin-currency').value;
+        const selected = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        
+        if(!date || !amt || selected.length === 0) return alert('請填寫完整資訊！');
+        
+        let list = db.get('fin_list', []);
+        if (editId) {
+            list = list.map(item => item.id == editId ? { id: Number(editId), date, members: selected, category: cat, amt, currency: cur } : item);
+            document.getElementById('edit-fin-id').value = "";
+            document.getElementById('btn-save-finance').innerText = "儲存";
+        } else {
+            list.unshift({ id: Date.now(), date, members: selected, category: cat, amt, currency: cur });
+        }
+        
+        db.set('fin_list', list);
+        renderFinance();
+        alert('已儲存！');
+        resetFinanceForm();
+    }
+
+    function resetFinanceForm() {
+        document.getElementById('fin-amt').value = '';
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(el => el.classList.remove('active'));
+        document.getElementById('fin-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function editFinance(id) {
+        const item = db.get('fin_list', []).find(i => i.id == id);
+        if(!item) return;
+        document.getElementById('edit-fin-id').value = item.id;
+        document.getElementById('fin-date').value = item.date;
+        document.getElementById('fin-category').value = item.category;
+        document.getElementById('fin-amt').value = item.amt;
+        document.getElementById('fin-currency').value = item.currency;
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
+            if(item.members.includes(tag.innerText)) tag.classList.add('active');
+            else tag.classList.remove('active');
         });
-
-        // 更新文字
-        document.getElementById('display-name').innerText = prof.name;
-        document.getElementById('display-status').innerText = prof.status;
-        document.getElementById('input-name').value = prof.name;
-        document.getElementById('input-status').value = prof.status;
-
-        // 更新大頭貼與背景
-        if (prof.avatar) document.getElementById('prof-avatar-img').src = prof.avatar;
-        if (prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
-
-        // 渲染成員列表
-        renderMemberList();
+        document.getElementById('btn-save-finance').innerText = "更新紀錄";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 2. 儲存文字功能 (優化版)
-    function saveProfileText() {
-        const newName = document.getElementById('input-name').value.trim();
-        const newStatus = document.getElementById('input-status').value.trim();
-        
-        const prof = db.get('profile', {});
-        prof.name = newName || "Carat";
-        prof.status = newStatus || "say the name!Seventeen!";
-        
-        db.set('profile', prof);
-
-        // 即時反映到 UI
-        document.getElementById('display-name').innerText = prof.name;
-        document.getElementById('display-status').innerText = prof.status;
-        
-        toggleEdit(); // 關閉編輯框
-        alert("資料已更新！");
+    function renderFinance() {
+        const list = db.get('fin_list', []);
+        document.getElementById('list-finance').innerHTML = list.map(i => `
+            <div class="svt-card d-flex justify-content-between align-items-center">
+                <i class="fas fa-pencil-alt edit-icon" onclick="editFinance(${i.id})"></i>
+                <div>
+                    <div class="small text-muted">${i.date} · ${i.category}</div>
+                    <div class="fw-bold text-serenity">${i.members.join(', ')}</div>
+                </div>
+                <div class="fw-bold text-dark text-end">${i.currency} ${Number(i.amt).toLocaleString()}</div>
+            </div>
+        `).join('');
     }
 
-    // 3. 圖片處理功能 (修正版)
-    function handleImageUpload(type) {
-        const inputId = type === 'bg' ? 'bg-trigger' : 'av-trigger';
-        const file = document.getElementById(inputId).files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const prof = db.get('profile', {});
-            prof[type] = e.target.result; // 存入 Base64
-            db.set('profile', prof);
-            
-            // 立即更新頁面
-            if (type === 'avatar') {
-                document.getElementById('prof-avatar-img').src = e.target.result;
-            } else {
-                document.getElementById('prof-bg').style.backgroundImage = `url(${e.target.result})`;
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // 4. 成員頭像上傳
-    function triggerMemberPic(m) {
-        targetMember = m;
-        document.getElementById('member-pic-input').click();
-    }
-
-    document.getElementById('member-pic-input').onchange = e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-            const pics = db.get('member_pics', {});
-            pics[targetMember] = ev.target.result;
-            db.set('member_pics', pics);
-            renderMemberList(); // 重新渲染列表
-        };
-        reader.readAsDataURL(file);
-    };
-
-    // 5. 渲染成員列表
-    function renderMemberList() {
+    // --- 其他渲染邏輯 ---
+    function renderProfile() {
+        const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
         const ratings = db.get('ratings', {});
         const pics = db.get('member_pics', {});
-        
-        const html = members.map(m => {
+        document.getElementById('display-name').innerText = prof.name;
+        document.getElementById('display-status').innerText = prof.status;
+        const avatarBox = document.getElementById('prof-avatar-content');
+        avatarBox.innerHTML = prof.avatar ? `<img src="${prof.avatar}">` : `<i class="fas fa-gem"></i>`;
+        document.getElementById('prof-bg').style.backgroundImage = prof.bg ? `url(${prof.bg})` : `none`;
+        document.getElementById('member-ratings').innerHTML = members.map(m => {
             const score = ratings[m] || 0;
             const pic = pics[m] || "";
             return `
@@ -238,7 +244,7 @@
                         <div class="member-avatar-sm" onclick="triggerMemberPic('${m}')">
                             ${pic ? `<img src="${pic}">` : `<i class="fas fa-gem text-white" style="font-size:0.7rem"></i>`}
                         </div>
-                        <span class="member-name-btn" onclick="goToMemberDetail('${m}')">${m}</span>
+                        <span class="fw-bold text-serenity" style="cursor:pointer" onclick="goToMemberDetail('${m}')">${m}</span>
                     </div>
                     <div class="d-flex align-items-center">
                         ${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${score >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}
@@ -246,46 +252,73 @@
                     </div>
                 </div>`;
         }).join('');
-        document.getElementById('member-ratings').innerHTML = html;
-    }
-
-    // --- 其他功能 ---
-    function updateRate(m, s) {
-        const r = db.get('ratings', {});
-        r[m] = s; db.set('ratings', r);
-        renderMemberList();
-    }
-
-    function toggleEdit() {
-        const fields = document.getElementById('edit-fields');
-        fields.style.display = fields.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function showPage(pageId) {
-        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-        document.getElementById('page-' + pageId).classList.add('active');
-        // 更新導覽列
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if (pageId === 'profile') {
-            document.querySelector('.nav-item:nth-child(3)').classList.add('active');
-            initProfile();
-        }
     }
 
     function goToMemberDetail(name) {
-        document.getElementById('detail-title').innerText = name;
         const pics = db.get('member_pics', {});
-        const pic = pics[name];
-        document.getElementById('detail-member-avatar-container').innerHTML = pic 
-            ? `<img src="${pic}" class="detail-avatar">` 
-            : `<div class="detail-avatar"><i class="fas fa-gem"></i></div>`;
-        
-        // 此處可加入記帳與日記的濾選邏輯
+        const finList = db.get('fin_list', []);
+        const memberFins = finList.filter(f => f.members.includes(name));
+        document.getElementById('detail-member-info').innerHTML = `
+            <div class="detail-avatar">${pics[name] ? `<img src="${pics[name]}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : `<i class="fas fa-gem"></i>`}</div>
+            <h3 id="detail-title">${name}</h3>`;
+        document.getElementById('detail-finance-list').innerHTML = memberFins.length > 0 
+            ? memberFins.map(i => `<div class="detail-item"><strong>${i.date}</strong><br>${i.category}: ${i.currency} ${Number(i.amt).toLocaleString()}</div>`).join('')
+            : `<div class="text-muted small p-3">尚無相關記帳資料</div>`;
         showPage('member-detail');
     }
 
-    // 啟動
-    window.onload = initProfile;
+    function showPage(id) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        if(document.getElementById('page-' + id)) document.getElementById('page-' + id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if(id === 'profile') document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+        if(id === 'finance') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function updateRate(m, s) {
+        const r = db.get('ratings', {});
+        r[m] = s; db.set('ratings', r); renderProfile();
+    }
+
+    function saveProfileText() {
+        const prof = db.get('profile', {});
+        prof.name = document.getElementById('input-name').value || "Carat";
+        prof.status = document.getElementById('input-status').value || "Say the name!";
+        db.set('profile', prof); renderProfile(); toggleEdit();
+    }
+
+    function toggleEdit() {
+        const f = document.getElementById('edit-fields');
+        f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleImageUpload(type) {
+        const file = document.getElementById(type === 'bg' ? 'bg-trigger' : 'av-trigger').files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const prof = db.get('profile', {});
+            prof[type] = e.target.result;
+            db.set('profile', prof); renderProfile();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function triggerMemberPic(m) { targetMember = m; document.getElementById('member-pic-input').click(); }
+    document.getElementById('member-pic-input').onchange = e => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const pics = db.get('member_pics', {});
+            pics[targetMember] = ev.target.result;
+            db.set('member_pics', pics); renderProfile();
+        };
+        reader.readAsDataURL(file);
+    };
+
+    window.onload = init;
 </script>
 </body>
 </html>
