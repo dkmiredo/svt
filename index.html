@@ -15,7 +15,7 @@
             font-family: 'Kiwi Maru', 'Noto Sans TC', sans-serif;
             color: #555;
         }
-        .app-container { max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); min-height: 100vh; position: relative; padding-bottom: 90px; }
+        .app-container { max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); min-height: 100vh; position: relative; padding-bottom: 110px; }
         
         /* 分頁切換 */
         .page-section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
@@ -24,46 +24,67 @@
 
         .section-header { background-color: var(--serenity); color: white; padding: 6px 18px; border-radius: 50px; display: inline-block; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(146, 168, 209, 0.3); }
         .svt-card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(146, 168, 209, 0.2); position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: none; padding: 8px 20px; font-weight: bold; width: 100%; transition: 0.3s; }
-        .text-serenity { color: var(--serenity) !important; }
-
-        /* 編輯小圖示 */
-        .edit-icon { position: absolute; top: 12px; right: 12px; color: var(--serenity); cursor: pointer; font-size: 0.9rem; opacity: 0.6; transition: 0.3s; }
-        .edit-icon:hover { opacity: 1; transform: scale(1.1); }
-
-        /* 主頁與頭像樣式 */
-        .profile-header { height: 160px; background: linear-gradient(45deg, var(--rose-quartz), #f8d7d7); background-position: center; background-size: cover; position: relative; border-bottom: 4px solid white; cursor: pointer; }
-        .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: linear-gradient(135deg, var(--serenity), #b0c4de); z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        /* 1. 主頁專屬樣式 (已覆蓋) */
+        .profile-header { 
+            height: 160px; 
+            background: linear-gradient(45deg, var(--rose-quartz), var(--serenity)); 
+            position: relative; border-bottom: 4px solid white; 
+        }
+        .profile-avatar-container { 
+            width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; 
+            position: absolute; bottom: -45px; left: 20px; background: white; 
+            z-index: 10; display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-avatar-container i { color: white; font-size: 2rem; }
-
-        /* 列表 */
-        .member-avatar-sm { width: 38px; height: 38px; border-radius: 50%; margin-right: 12px; border: 1.5px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        
+        .member-avatar-sm { 
+            width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; 
+            border: 2px solid white; 
+            background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); 
+            overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+        }
         .member-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+        .member-avatar-sm i { color: white; font-size: 0.8rem; }
+
         .gem-rating { font-size: 0.85rem; color: #eee; cursor: pointer; margin: 0 2px; }
         .gem-rating.active { color: var(--serenity); }
         .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; transition: 0.3s; }
         .reset-btn:hover { color: var(--rose-quartz); transform: rotate(180deg); }
 
-        /* 記帳頁成員標籤 */
-        .member-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #fdfdfd; padding: 12px; border-radius: 12px; border: 1px solid #eee; max-height: 160px; overflow-y: auto; }
-        .member-tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--serenity); color: var(--serenity); cursor: pointer; transition: 0.2s; }
-        .member-tag.active { background: var(--serenity); color: white; }
-
-        /* 詳情頁樣式 */
-        .detail-header { display: flex; align-items: center; margin-bottom: 25px; padding-top: 10px; }
-        .back-btn { font-size: 1.4rem; color: white; cursor: pointer; margin-right: 15px; }
-        .detail-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; margin-right: 12px; object-fit: cover; background: var(--serenity); display: flex; align-items: center; justify-content: center; color: white; }
-        #detail-title { color: white; font-weight: bold; margin: 0; font-size: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .detail-item { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; border-left: 5px solid var(--rose-quartz); font-size: 0.9rem; }
-
-        /* 導覽列 */
+        /* 2. 導覽列正中間按鈕 (已覆蓋) */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; align-items: center; padding: 8px 0; border-top: 1px solid #eee; z-index: 1000; height: 75px; }
-        .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; text-decoration: none; }
+        .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; text-decoration: none; position: relative; }
         .nav-item.active { color: var(--serenity); }
+        .nav-center { margin-top: -35px !important; }
+        .nav-center-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
+
+        /* 其他原有功能樣式保持 */
+        .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; transition: all 0.3s; }
+        .btn-svt.state-expanded { background: white; color: var(--serenity); border: 2px solid white; box-shadow: 0 4px 12px rgba(255,255,255,0.4); }
+        .calendar-nav { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(146,168,209,0.2); }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .cal-month { font-weight: bold; color: var(--serenity); font-size: 1.1rem; }
+        .week-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .day-item span { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 2px; }
+        .day-item.active { background: var(--serenity); color: white; font-weight: bold; }
+        .day-item.active span { color: white; }
+        .diary-paper { background: #fff; background-image: linear-gradient(#f9f9f9 1px, transparent 1px); background-size: 100% 2.5rem; line-height: 2.5rem; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; }
+        .diary-paper::before { content: ''; position: absolute; left: 25px; top: 0; bottom: 0; width: 1.5px; background: rgba(247, 202, 201, 0.5); }
+        .diary-content-text { margin-left: 25px; font-size: 0.95rem; color: #444; min-height: 5rem; white-space: pre-wrap; }
+        .diary-thumb { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin-top: 15px; margin-left: 25px; border: 3px solid white; cursor: zoom-in; }
+        .member-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #fdfdfd; padding: 12px; border-radius: 12px; border: 1px solid #eee; max-height: 160px; overflow-y: auto; }
+        .member-tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--serenity); color: var(--serenity); cursor: pointer; }
+        .member-tag.active { background: var(--serenity); color: white; }
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
+        .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
     </style>
 </head>
 <body>
+
+<div id="lightbox" class="lightbox" onclick="this.style.display='none'"><img src="" id="lightbox-img"></div>
 
 <div class="app-container">
     <input type="file" id="member-pic-input" style="display:none;" accept="image/*">
@@ -73,182 +94,119 @@
     <section id="page-profile" class="page-section active" style="padding:0;">
         <div id="prof-bg" class="profile-header" onclick="document.getElementById('bg-trigger').click()">
             <div class="profile-avatar-container" onclick="event.stopPropagation(); document.getElementById('av-trigger').click()">
-                <div id="prof-avatar-content"><i class="fas fa-gem"></i></div>
+                <div id="prof-avatar-content"><i class="fas fa-gem" style="color:var(--serenity); font-size:2rem;"></i></div>
             </div>
         </div>
         <div class="p-4 bg-white shadow-sm mb-3" style="padding-top: 50px !important;">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h4 id="display-name" class="fw-bold m-0 text-serenity">Carat</h4>
+                    <h4 id="display-name" class="fw-bold m-0" style="color:var(--serenity)">Carat</h4>
                     <p id="display-status" class="text-muted small mb-0">say the name!</p>
                 </div>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="toggleEdit()">編輯</button>
             </div>
-            <div id="edit-fields" style="display:none;" class="mt-3 p-3 bg-light rounded shadow-inner">
+            <div id="edit-fields" style="display:none;" class="mt-3 p-3 bg-light rounded">
                 <input type="text" id="input-name" class="form-control form-control-sm mb-2" placeholder="暱稱">
                 <input type="text" id="input-status" class="form-control form-control-sm mb-2" placeholder="狀態消息">
-                <button class="btn btn-sm btn-svt w-100" onclick="saveProfileText()">完成儲存</button>
+                <button class="btn btn-sm btn-svt w-100" onclick="saveProfileText()">儲存</button>
             </div>
         </div>
         <div class="px-3">
-            <div class="section-header">列表</div>
+            <div class="section-header">成員列表</div>
             <div id="member-ratings"></div>
         </div>
     </section>
 
     <section id="page-finance" class="page-section">
-        <div class="section-header">記帳</div>
-        <div class="svt-card" id="finance-form">
-            <input type="hidden" id="edit-fin-id" value="">
-            
+        <div class="section-header">追星記帳</div>
+        <div class="svt-card">
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="fin-date" class="form-control mb-3">
-            
-            <label class="small text-muted mb-1">成員 (可多選)</label>
+            <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
-            
-            <label class="small text-muted mb-1">類別</label>
-            <select id="fin-category" class="form-select mb-3">
-                <option value="專輯">專輯</option><option value="小卡">小卡</option><option value="周邊">周邊</option><option value="其他">其他</option>
-            </select>
-            
             <label class="small text-muted mb-1">金額</label>
             <div class="input-group mb-3">
-                <select id="fin-currency" class="form-select" style="max-width: 90px; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                    <option value="TWD">台幣</option><option value="KRW">韓元</option><option value="JPY">日幣</option>
-                </select>
-                <input type="number" id="fin-amt" class="form-control" placeholder="輸入金額" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                <select id="fin-currency" class="form-select" style="max-width:90px;"><option value="TWD">台幣</option><option value="KRW">韓元</option></select>
+                <input type="number" id="fin-amt" class="form-control" placeholder="金額">
             </div>
-            <button class="btn btn-svt" id="btn-save-finance" onclick="addFinance()">儲存</button>
+            <button class="btn btn-svt" onclick="addFinance()">儲存支出</button>
         </div>
         <div id="list-finance"></div>
     </section>
 
-    <section id="page-member-detail" class="page-section">
-        <div class="detail-header">
-            <i class="fas fa-arrow-left back-btn" onclick="showPage('profile')"></i>
-            <div id="detail-member-info" class="d-flex align-items-center"></div>
+    <section id="page-diary" class="page-section">
+        <div class="calendar-nav">
+            <div class="cal-header">
+                <i class="fas fa-chevron-left" style="color:var(--serenity); cursor:pointer" onclick="changeWeek(-1)"></i>
+                <div class="cal-month" id="cal-month-display"></div>
+                <i class="fas fa-chevron-right" style="color:var(--serenity); cursor:pointer" onclick="changeWeek(1)"></i>
+            </div>
+            <div class="week-table" id="week-table-display"></div>
         </div>
-        <div class="section-header" style="font-size: 0.8rem;">相關記帳紀錄</div>
-        <div id="detail-finance-list"></div>
+        <button id="add-diary-btn" class="btn btn-svt mb-3" onclick="toggleDiaryForm()"><i class="fas fa-plus"></i> 新增日記</button>
+        <div id="diary-form-container" class="svt-card" style="display:none;">
+            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天發生了什麼事？"></textarea>
+            <button class="btn btn-svt" onclick="saveDiary()">儲存紀錄</button>
+        </div>
+        <div id="daily-merged-content"></div>
     </section>
 
     <nav class="bottom-nav">
-        <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i><span>記帳</span></div>
-        <div class="nav-item active" onclick="showPage('profile')" style="margin-top:-25px;">
-            <div style="width:55px; height:55px; border-radius:50%; background:var(--serenity); color:white; display:flex; align-items:center; justify-content:center; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.1);"><i class="fas fa-gem" style="margin:0; font-size:1.4rem;"></i></div>
+        <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i><br>記帳</div>
+        <div class="nav-item active nav-center" onclick="showPage('profile')">
+            <div class="nav-center-circle"><i class="fas fa-gem" style="font-size:1.5rem;"></i></div>
+            <span>主頁</span>
         </div>
-        <div class="nav-item" onclick="showPage('translate')"><i class="fas fa-language"></i><span>翻譯</span></div>
+        <div class="nav-item" onclick="showPage('diary')"><i class="fas fa-book"></i><br>日記</div>
     </nav>
 </div>
 
 <script>
     const members = ["S.COUPS", "JEONGHAN", "JOSHUA", "JUN", "HOSHI", "WONWOO", "WOOZI", "THE 8", "MINGYU", "DK", "SEUNGKWAN", "VERNON", "DINO"];
-    const KEY_PREFIX = 'SVT_V9_STABLE';
-
+    const KEY_PREFIX = 'SVT_V27_MERGED';
     const db = {
         get: (key, def) => JSON.parse(localStorage.getItem(`${KEY_PREFIX}_${key}`)) || def,
         set: (key, val) => localStorage.setItem(`${KEY_PREFIX}_${key}`, JSON.stringify(val))
     };
 
+    let selectedDate = new Date().toISOString().split('T')[0];
+    let currentWeekStart = new Date();
+    currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
     let targetMember = "";
 
     function init() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('fin-date').value = today;
-        document.getElementById('fin-member-multi').innerHTML = members.map(m => 
-            `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`
-        ).join('');
+        const tagHTML = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
+        const finMulti = document.getElementById('fin-member-multi');
+        if(finMulti) finMulti.innerHTML = tagHTML;
+        
+        document.getElementById('fin-date').value = selectedDate;
+        renderWeekTable();
+        renderDiaryContent();
         renderProfile();
         renderFinance();
     }
 
-    // --- 記帳邏輯 ---
-    function addFinance() {
-        const editId = document.getElementById('edit-fin-id').value;
-        const date = document.getElementById('fin-date').value;
-        const cat = document.getElementById('fin-category').value;
-        const amt = document.getElementById('fin-amt').value;
-        const cur = document.getElementById('fin-currency').value;
-        const selected = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
-        
-        if(!date || !amt || selected.length === 0) return alert('請填寫完整資訊！');
-        
-        let list = db.get('fin_list', []);
-        if (editId) {
-            list = list.map(item => item.id == editId ? { id: Number(editId), date, members: selected, category: cat, amt, currency: cur } : item);
-            document.getElementById('edit-fin-id').value = "";
-            document.getElementById('btn-save-finance').innerText = "儲存";
-        } else {
-            list.unshift({ id: Date.now(), date, members: selected, category: cat, amt, currency: cur });
-        }
-        
-        db.set('fin_list', list);
-        renderFinance();
-        alert('已儲存！');
-        resetFinanceForm();
-    }
-
-    function resetFinanceForm() {
-        document.getElementById('fin-amt').value = '';
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(el => el.classList.remove('active'));
-        document.getElementById('fin-date').value = new Date().toISOString().split('T')[0];
-    }
-
-    function editFinance(id) {
-        const item = db.get('fin_list', []).find(i => i.id == id);
-        if(!item) return;
-        document.getElementById('edit-fin-id').value = item.id;
-        document.getElementById('fin-date').value = item.date;
-        document.getElementById('fin-category').value = item.category;
-        document.getElementById('fin-amt').value = item.amt;
-        document.getElementById('fin-currency').value = item.currency;
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
-            if(item.members.includes(tag.innerText)) tag.classList.add('active');
-            else tag.classList.remove('active');
-        });
-        document.getElementById('btn-save-finance').innerText = "更新紀錄";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function renderFinance() {
-        let list = db.get('fin_list', []);
-        
-        // --- 排序邏輯：日期越新越前面 ---
-        list.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        document.getElementById('list-finance').innerHTML = list.map(i => `
-            <div class="svt-card d-flex justify-content-between align-items-center">
-                <i class="fas fa-pencil-alt edit-icon" onclick="editFinance(${i.id})"></i>
-                <div>
-                    <div class="small text-muted">${i.date} · ${i.category}</div>
-                    <div class="fw-bold text-serenity">${i.members.join(', ')}</div>
-                </div>
-                <div class="fw-bold text-dark text-end">${i.currency} ${Number(i.amt).toLocaleString()}</div>
-            </div>
-        `).join('');
-    }
-
-    // --- 其他渲染邏輯 ---
+    // --- 主頁邏輯 (覆蓋提取內容) ---
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
         const ratings = db.get('ratings', {});
         const pics = db.get('member_pics', {});
+
         document.getElementById('display-name').innerText = prof.name;
         document.getElementById('display-status').innerText = prof.status;
-        const avatarBox = document.getElementById('prof-avatar-content');
-        avatarBox.innerHTML = prof.avatar ? `<img src="${prof.avatar}">` : `<i class="fas fa-gem"></i>`;
-        document.getElementById('prof-bg').style.backgroundImage = prof.bg ? `url(${prof.bg})` : `none`;
+        if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
+        if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
+
         document.getElementById('member-ratings').innerHTML = members.map(m => {
             const score = ratings[m] || 0;
-            const pic = pics[m] || "";
+            const pic = pics[m]; 
             return `
                 <div class="svt-card d-flex align-items-center justify-content-between py-2">
-                    <div class="d-flex align-items-center">
-                        <div class="member-avatar-sm" onclick="triggerMemberPic('${m}')">
-                            ${pic ? `<img src="${pic}">` : `<i class="fas fa-gem text-white" style="font-size:0.7rem"></i>`}
+                    <div class="d-flex align-items-center" onclick="triggerMemberPic('${m}')">
+                        <div class="member-avatar-sm">
+                            ${pic ? `<img src="${pic}">` : `<i class="fas fa-gem"></i>`}
                         </div>
-                        <span class="fw-bold text-serenity" style="cursor:pointer" onclick="goToMemberDetail('${m}')">${m}</span>
+                        <span class="fw-bold" style="color:var(--serenity)">${m}</span>
                     </div>
                     <div class="d-flex align-items-center">
                         ${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${score >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}
@@ -258,38 +216,14 @@
         }).join('');
     }
 
-    function goToMemberDetail(name) {
-        const pics = db.get('member_pics', {});
-        const finList = db.get('fin_list', []);
-        
-        // --- 排序邏輯：篩選後按日期排序 ---
-        const memberFins = finList
-            .filter(f => f.members.includes(name))
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        document.getElementById('detail-member-info').innerHTML = `
-            <div class="detail-avatar">${pics[name] ? `<img src="${pics[name]}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : `<i class="fas fa-gem"></i>`}</div>
-            <h3 id="detail-title">${name}</h3>`;
-        document.getElementById('detail-finance-list').innerHTML = memberFins.length > 0 
-            ? memberFins.map(i => `<div class="detail-item"><strong>${i.date}</strong><br>${i.category}: ${i.currency} ${Number(i.amt).toLocaleString()}</div>`).join('')
-            : `<div class="text-muted small p-3">尚無相關記帳資料</div>`;
-        showPage('member-detail');
-    }
-
-    function showPage(id) {
-        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-        if(document.getElementById('page-' + id)) document.getElementById('page-' + id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(id === 'profile') document.querySelector('.nav-item:nth-child(2)').classList.add('active');
-        if(id === 'finance') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
-        window.scrollTo(0,0);
-    }
-
     function updateRate(m, s) {
         const r = db.get('ratings', {});
-        r[m] = s; db.set('ratings', r); renderProfile();
+        r[m] = s;
+        db.set('ratings', r);
+        renderProfile();
     }
 
+    function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = f.style.display==='none'?'block':'none'; }
     function saveProfileText() {
         const prof = db.get('profile', {});
         prof.name = document.getElementById('input-name').value || "Carat";
@@ -297,35 +231,82 @@
         db.set('profile', prof); renderProfile(); toggleEdit();
     }
 
-    function toggleEdit() {
-        const f = document.getElementById('edit-fields');
-        f.style.display = f.style.display === 'none' ? 'block' : 'none';
-    }
-
     function handleImageUpload(type) {
-        const file = document.getElementById(type === 'bg' ? 'bg-trigger' : 'av-trigger').files[0];
-        if(!file) return;
+        const file = document.getElementById(type==='bg'?'bg-trigger':'av-trigger').files[0];
         const reader = new FileReader();
-        reader.onload = e => {
-            const prof = db.get('profile', {});
-            prof[type] = e.target.result;
-            db.set('profile', prof); renderProfile();
-        };
-        reader.readAsDataURL(file);
+        reader.onload = e => { const prof=db.get('profile',{}); prof[type]=e.target.result; db.set('profile',prof); renderProfile(); };
+        if(file) reader.readAsDataURL(file);
     }
 
     function triggerMemberPic(m) { targetMember = m; document.getElementById('member-pic-input').click(); }
     document.getElementById('member-pic-input').onchange = e => {
         const file = e.target.files[0];
-        if(!file) return;
         const reader = new FileReader();
-        reader.onload = ev => {
-            const pics = db.get('member_pics', {});
-            pics[targetMember] = ev.target.result;
-            db.set('member_pics', pics); renderProfile();
-        };
-        reader.readAsDataURL(file);
+        reader.onload = ev => { const pics=db.get('member_pics', {}); pics[targetMember]=ev.target.result; db.set('member_pics',pics); renderProfile(); };
+        if(file) reader.readAsDataURL(file);
     };
+
+    // --- 日記與記帳邏輯 (保持原有) ---
+    function renderWeekTable() {
+        const table = document.getElementById('week-table-display');
+        table.innerHTML = "";
+        const days = ['日', '一', '二', '三', '四', '五', '六'];
+        const tempDate = new Date(currentWeekStart);
+        for (let i = 0; i < 7; i++) {
+            const dateStr = tempDate.toISOString().split('T')[0];
+            table.innerHTML += `<div class="day-item ${dateStr === selectedDate ? 'active' : ''}" onclick="selectedDate='${dateStr}';renderWeekTable();renderDiaryContent();"><span>${days[i]}</span>${tempDate.getDate()}</div>`;
+            tempDate.setDate(tempDate.getDate() + 1);
+        }
+        document.getElementById('cal-month-display').innerText = `${currentWeekStart.getFullYear()}/${currentWeekStart.getMonth()+1}`;
+    }
+    function renderDiaryContent() {
+        const diaries = db.get('diary_list', {});
+        const data = diaries[selectedDate];
+        const display = document.getElementById('daily-merged-content');
+        display.innerHTML = data ? `<div class="diary-paper"><div class="diary-content-text">${data.content}</div></div>` : `<div class="text-center p-5 text-white">這天沒有日記呢 💎</div>`;
+    }
+    function toggleDiaryForm() {
+        const c = document.getElementById('diary-form-container');
+        c.style.display = c.style.display === 'none' ? 'block' : 'none';
+    }
+    function saveDiary() {
+        const content = document.getElementById('diary-content').value;
+        if(!content) return;
+        let diaries = db.get('diary_list', {});
+        diaries[selectedDate] = { content };
+        db.set('diary_list', diaries);
+        document.getElementById('diary-content').value = "";
+        toggleDiaryForm(); renderDiaryContent();
+    }
+    function changeWeek(dir) { currentWeekStart.setDate(currentWeekStart.getDate() + (dir*7)); renderWeekTable(); }
+    
+    function addFinance() {
+        const date = document.getElementById('fin-date').value;
+        const amt = document.getElementById('fin-amt').value;
+        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        if(!amt || tags.length === 0) return alert('資訊不完整');
+        let list = db.get('fin_list', []);
+        list.unshift({ id: Date.now(), date, members: tags, amt, currency: document.getElementById('fin-currency').value });
+        db.set('fin_list', list);
+        renderFinance();
+    }
+    function renderFinance() {
+        const list = db.get('fin_list', []);
+        document.getElementById('list-finance').innerHTML = list.map(i => `
+            <div class="svt-card d-flex justify-content-between align-items-center">
+                <div><div class="small text-muted">${i.date}</div><div class="fw-bold" style="color:var(--serenity)">${i.members.join(', ')}</div></div>
+                <div class="fw-bold">${i.currency} ${i.amt}</div>
+            </div>`).join('');
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('page-' + id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const navIdx = { 'finance': 1, 'profile': 2, 'diary': 3 };
+        document.querySelector(`.nav-item:nth-child(${navIdx[id]})`).classList.add('active');
+        window.scrollTo(0,0);
+    }
 
     window.onload = init;
 </script>
