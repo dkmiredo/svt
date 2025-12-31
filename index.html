@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SVT life</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,37 +25,44 @@
         .section-header { background-color: var(--serenity); color: white; padding: 6px 18px; border-radius: 50px; display: inline-block; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(146, 168, 209, 0.3); }
         .svt-card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(146, 168, 209, 0.2); position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
-        /* 主頁樣式 */
         .profile-header { height: 160px; background: linear-gradient(45deg, var(--rose-quartz), var(--serenity)); background-size: cover; background-position: center; position: relative; border-bottom: 4px solid white; cursor: pointer; }
         .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: white; z-index: 10; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 圖片裁切彈窗修正樣式 */
-        #cropperModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; display: none; }
-        .cropper-container-box { width: 100%; height: 100%; }
-        .fab-container { position: fixed; bottom: 50px; left: 0; width: 100%; display: flex; justify-content: center; gap: 60px; z-index: 100001 !important; }
-        .btn-fab { width: 65px; height: 65px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
-        .btn-fab-ok { background: white; color: var(--serenity); }
-        .btn-fab-cancel { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); }
-        .btn-fab:active { transform: scale(0.9); }
+        /* 裁切彈窗新樣式：確保控制列與裁切區不重疊 */
+        #cropperModal { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: #000; z-index: 11000; display: none; flex-direction: column; 
+        }
+        .cropper-container-box { 
+            flex: 1; width: 100%; position: relative; overflow: hidden; background: #000; 
+        }
+        .crop-controls { 
+            height: 100px; background: #1a1a1a; display: flex; 
+            justify-content: space-around; align-items: center; 
+            padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #333;
+        }
+        .btn-fab { 
+            width: 60px; height: 60px; border-radius: 50%; border: none; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.5rem; transition: transform 0.2s; 
+        }
+        .btn-fab-ok { background: var(--serenity); color: white; }
+        .btn-fab-cancel { background: #444; color: white; }
 
-        /* 成員列表小圖 */
         .member-avatar-sm { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; border: 2px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .member-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-        .member-avatar-sm i { color: white; font-size: 0.8rem; }
         
         .gem-rating { font-size: 0.85rem; color: #eee; cursor: pointer; margin: 0 2px; }
         .gem-rating.active { color: var(--serenity); }
         .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; transition: 0.3s; }
         .reset-btn:hover { color: var(--rose-quartz); transform: rotate(180deg); }
 
-        /* 彈窗樣式 */
         .member-detail-modal { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 100%; background: #fff; z-index: 2000; display: none; overflow-y: auto; padding: 25px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
         .modal-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--serenity); object-fit: cover; margin-right: 12px; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .modal-avatar i { color: white; font-size: 1.2rem; }
         .sync-fin-item { font-size: 0.8rem; background: #f0f4f8; padding: 8px; border-left: 3px solid var(--serenity); margin-bottom: 8px; border-radius: 4px; }
 
-        /* --- 日記專屬樣式 --- */
         .calendar-nav { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(146,168,209,0.2); }
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .cal-month { font-weight: bold; color: var(--serenity); font-size: 1.1rem; }
@@ -77,7 +84,6 @@
         .member-tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--serenity); color: var(--serenity); cursor: pointer; }
         .member-tag.active { background: var(--serenity); color: white; }
 
-        /* 導覽列 */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; align-items: center; padding: 8px 0; border-top: 1px solid #eee; z-index: 1000; height: 75px; }
         .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; text-decoration: none; position: relative; }
         .nav-item.active { color: var(--serenity); }
@@ -99,7 +105,7 @@
         <div class="cropper-container-box">
             <img id="image-to-crop">
         </div>
-        <div class="fab-container">
+        <div class="crop-controls">
             <button class="btn-fab btn-fab-cancel" onclick="closeCropper()"><i class="fas fa-times"></i></button>
             <button class="btn-fab btn-fab-ok" onclick="confirmCrop()"><i class="fas fa-check"></i></button>
         </div>
@@ -173,29 +179,15 @@
             </div>
             <div class="week-table" id="week-table-display"></div>
         </div>
-
-        <button id="add-diary-btn" class="btn btn-svt mb-3" onclick="toggleDiaryForm()">
-            <i class="fas fa-plus"></i> 新增日記
-        </button>
-
+        <button id="add-diary-btn" class="btn btn-svt mb-3" onclick="toggleDiaryForm()"><i class="fas fa-plus"></i> 新增日記</button>
         <div id="diary-form-container" class="svt-card" style="display:none;">
-            <label class="small text-muted mb-1">選擇日期</label>
             <input type="date" id="diary-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
-            
-            <label class="small text-muted mb-1">對象成員 (可多選)</label>
             <div id="diary-member-multi" class="member-checkbox-group mb-3"></div>
-            
-            <label class="small text-muted mb-1">日記內容</label>
             <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄～"></textarea>
-            
-            <button class="btn btn-sm btn-outline-secondary mb-3" onclick="document.getElementById('diary-img-input').click()">
-                <i class="fas fa-camera"></i> 上傳圖片
-            </button>
+            <button class="btn btn-sm btn-outline-secondary mb-3" onclick="document.getElementById('diary-img-input').click()"><i class="fas fa-camera"></i> 上傳圖片</button>
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
-            
             <button class="btn btn-svt" onclick="saveDiary()">儲存</button>
         </div>
-
         <div id="daily-merged-content"></div>
     </section>
 
@@ -210,7 +202,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
 <script>
     const members = ["S.COUPS", "JEONGHAN", "JOSHUA", "JUN", "HOSHI", "WONWOO", "WOOZI", "THE 8", "MINGYU", "DK", "SEUNGKWAN", "VERNON", "DINO"];
     const KEY_PREFIX = 'SVT_V28_SYNC';
@@ -222,32 +213,17 @@
     let selectedDate = new Date().toISOString().split('T')[0];
     let currentWeekStart = new Date();
     currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
-    
-    let cropper = null;
-    let currentProcessType = ''; 
-    let diaryTempImg = ""; // 日記暫存圖
+    let cropper = null, currentProcessType = '', diaryTempImg = "";
 
     function init() {
-        const financeTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
-        const diaryTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
-        
-        document.getElementById('fin-member-multi').innerHTML = financeTags;
-        document.getElementById('diary-member-multi').innerHTML = diaryTags;
-        
+        document.getElementById('fin-member-multi').innerHTML = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
+        document.getElementById('diary-member-multi').innerHTML = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
         document.getElementById('fin-date').value = selectedDate;
         document.getElementById('diary-date').value = selectedDate;
-
-        renderWeekTable();
-        renderDiaryContent();
-        renderProfile();
-        renderFinance();
+        renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
     }
 
-    // --- 圖片處理 ---
-    function startPhotoProcess(type) {
-        currentProcessType = type;
-        document.getElementById('universal-uploader').click();
-    }
+    function startPhotoProcess(type) { currentProcessType = type; document.getElementById('universal-uploader').click(); }
 
     document.getElementById('universal-uploader').onchange = function(e) {
         const file = e.target.files[0];
@@ -256,7 +232,7 @@
         reader.onload = function(event) {
             const img = document.getElementById('image-to-crop');
             img.src = event.target.result;
-            document.getElementById('cropperModal').style.display = 'block';
+            document.getElementById('cropperModal').style.display = 'flex';
             if (cropper) cropper.destroy();
             let aspectRatio = (currentProcessType === 'bg') ? 500 / 160 : 1;
             cropper = new Cropper(img, { aspectRatio, viewMode: 1, dragMode: 'move', autoCropArea: 0.8 });
@@ -282,107 +258,27 @@
         if (cropper) cropper.destroy();
     }
 
-    // --- 日記邏輯 (更新) ---
-    function toggleDiaryForm() {
-        const c = document.getElementById('diary-form-container');
-        const btn = document.getElementById('add-diary-btn');
-        const isHidden = c.style.display === 'none';
-        c.style.display = isHidden ? 'block' : 'none';
-        btn.innerHTML = isHidden ? '<i class="fas fa-times"></i> 新增日記' : '<i class="fas fa-plus"></i> 新增日記';
-    }
-
-    function syncSelectedDate(date) {
-        selectedDate = date;
-        document.getElementById('diary-date').value = date;
-        document.getElementById('fin-date').value = date;
-        renderWeekTable();
-        renderDiaryContent();
-    }
-
-    function handleDiaryImage(input) {
-        const reader = new FileReader();
-        reader.onload = e => { diaryTempImg = e.target.result; alert("圖片準備就緒！"); };
-        if(input.files[0]) reader.readAsDataURL(input.files[0]);
-    }
-
-    function saveDiary() {
-        const content = document.getElementById('diary-content').value;
-        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!content) return alert("請輸入內容");
-        let diaries = db.get('diary_list', {});
-        diaries[selectedDate] = { content, members: tags, img: diaryTempImg };
-        db.set('diary_list', diaries);
-        diaryTempImg = "";
-        document.getElementById('diary-content').value = "";
-        toggleDiaryForm(); renderDiaryContent();
-    }
-
-    function renderDiaryContent() {
-        const diaries = db.get('diary_list', {});
-        const data = diaries[selectedDate];
-        const display = document.getElementById('daily-merged-content');
-        if (data) {
-            display.innerHTML = `
-                <div class="diary-paper">
-                    <div class="diary-content-text">${data.content}</div>
-                    ${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-light text-serenity border me-1 small">${m}</span>`).join('')}</div>` : ''}
-                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
-                </div>`;
-        } else {
-            display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`;
+    function toggleEdit() { 
+        const f = document.getElementById('edit-fields'); 
+        f.style.display = (f.style.display === 'none') ? 'block' : 'none'; 
+        if(f.style.display === 'block') {
+            document.getElementById('input-name').value = document.getElementById('display-name').innerText;
+            document.getElementById('input-status').value = document.getElementById('display-status').innerText;
         }
     }
 
-    function openLightbox(src) {
-        document.getElementById('lightbox-img').src = src;
-        document.getElementById('lightbox').style.display = 'flex';
-    }
-
-    // --- 成員與記帳 (保持原樣) ---
-    function openMemberModal(name) {
-        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
-        const diaryData = db.get('diary_list', {});
-        const pics = db.get('member_pics', {});
-        const diaries = Object.keys(diaryData).filter(date => diaryData[date].content.includes(name) || (diaryData[date].members && diaryData[date].members.includes(name))).map(date => ({ date, content: diaryData[date].content }));
-        document.getElementById('modal-member-name').innerText = name;
-        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas fa-gem"></i>`;
-        let html = `<p class="small text-muted">與 ${name} 相關的紀錄：</p>`;
-        html += `<div class="fw-bold mt-3 mb-2" style="color:var(--serenity)">記帳紀錄💳</div>`;
-        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date} (${f.category})</span><span>${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無記帳紀錄</p>';
-        html += `<div class="fw-bold mt-4 mb-2" style="color:var(--serenity)">日記紀錄📔</div>`;
-        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b style="color:var(--serenity)">${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫無在日記中被提及</p>';
-        document.getElementById('modal-content').innerHTML = html;
-        document.getElementById('memberModal').style.display = 'block';
-    }
-
-    function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
-
-    function addFinance() {
-        const date = document.getElementById('fin-date').value;
-        const amt = document.getElementById('fin-amt').value;
-        const category = document.getElementById('fin-category').value;
-        const currency = document.getElementById('fin-currency').value;
-        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!amt || tags.length === 0) return alert('資訊不完整');
-        let list = db.get('fin_list', []);
-        list.unshift({ id: Date.now(), date, members: tags, amt, currency, category });
-        db.set('fin_list', list);
-        alert('記帳成功！'); renderFinance();
-    }
-
-    function renderFinance() {
-        const list = db.get('fin_list', []);
-        document.getElementById('list-finance').innerHTML = list.map(i => `
-            <div class="svt-card d-flex justify-content-between align-items-center">
-                <div><div class="small text-muted">${i.date} · ${i.category}</div><div class="fw-bold" style="color:var(--serenity)">${i.members.join(', ')}</div></div>
-                <div class="fw-bold">${i.currency} ${i.amt}</div>
-            </div>`).join('');
+    function saveProfileText() {
+        const prof = db.get('profile', { avatar: "", bg: "" });
+        prof.name = document.getElementById('input-name').value || "Carat";
+        prof.status = document.getElementById('input-status').value || "Say the name!";
+        db.set('profile', prof); 
+        renderProfile(); // 自動更新
+        document.getElementById('edit-fields').style.display = 'none'; // 自動隱藏
     }
 
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
-        const ratings = db.get('ratings', {});
-        const pics = db.get('member_pics', {});
+        const ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
         document.getElementById('display-name').innerText = prof.name;
         document.getElementById('display-status').innerText = prof.status;
         if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
@@ -390,9 +286,7 @@
         document.getElementById('member-ratings').innerHTML = members.map(m => `
             <div class="svt-card d-flex align-items-center justify-content-between py-2">
                 <div class="d-flex align-items-center">
-                    <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">
-                        ${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem"></i>`}
-                    </div>
+                    <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div>
                     <span class="fw-bold" style="color:var(--serenity); cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
                 </div>
                 <div class="d-flex align-items-center">
@@ -403,42 +297,45 @@
     }
 
     function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
-    function toggleEdit() { 
-        const f = document.getElementById('edit-fields'); 
-        f.style.display = (f.style.display === 'none') ? 'block' : 'none'; 
-        if(f.style.display === 'block') {
-            document.getElementById('input-name').value = document.getElementById('display-name').innerText;
-            document.getElementById('input-status').value = document.getElementById('display-status').innerText;
-        }
+    function openMemberModal(name) {
+        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
+        const diaryData = db.get('diary_list', {}), pics = db.get('member_pics', {});
+        const diaries = Object.keys(diaryData).filter(date => diaryData[date].members && diaryData[date].members.includes(name)).map(date => ({ date, content: diaryData[date].content }));
+        document.getElementById('modal-member-name').innerText = name;
+        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas fa-gem"></i>`;
+        let html = `<div class="fw-bold mt-3 mb-2" style="color:var(--serenity)">記帳紀錄</div>` + (finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date}</span><span>${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">無</p>');
+        html += `<div class="fw-bold mt-4 mb-2" style="color:var(--serenity)">日記紀錄</div>` + (diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b>${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">無</p>');
+        document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('memberModal').style.display = 'block';
     }
-        function saveProfileText() {
-        const newName = document.getElementById('input-name').value || "Carat";
-        const newStatus = document.getElementById('input-status').value || "Say the name!";
-        
-        // 取得舊有資料並覆蓋文字部分
-        const prof = db.get('profile', { avatar: "", bg: "" });
-        prof.name = newName;
-        prof.status = newStatus;
-        
-        // 存回資料庫
-        db.set('profile', prof); 
-        
-        // 立即更新 UI 顯示
-        renderProfile(); 
-        
-        // 關閉輸入框
-        document.getElementById('edit-fields').style.display = 'none';
-        
-        // 確保畫面停留在主頁並顯示成功訊息（可選）
-        window.scrollTo(0, 0);
+    function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
+    function addFinance() {
+        const date = document.getElementById('fin-date').value, amt = document.getElementById('fin-amt').value, category = document.getElementById('fin-category').value, currency = document.getElementById('fin-currency').value;
+        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        if(!amt || !tags.length) return alert('資訊不完整');
+        let list = db.get('fin_list', []); list.unshift({ id: Date.now(), date, members: tags, amt, currency, category });
+        db.set('fin_list', list); alert('記帳成功！'); renderFinance();
     }
-
+    function renderFinance() {
+        document.getElementById('list-finance').innerHTML = db.get('fin_list', []).map(i => `<div class="svt-card d-flex justify-content-between"><div><div class="small text-muted">${i.date}</div><div class="fw-bold" style="color:var(--serenity)">${i.members.join(', ')}</div></div><div class="fw-bold">${i.currency} ${i.amt}</div></div>`).join('');
+    }
+    function toggleDiaryForm() { const c = document.getElementById('diary-form-container'); c.style.display = (c.style.display === 'none' ? 'block' : 'none'); }
+    function syncSelectedDate(date) { selectedDate = date; renderWeekTable(); renderDiaryContent(); }
+    function handleDiaryImage(input) { if(input.files[0]) { const reader = new FileReader(); reader.onload = e => diaryTempImg = e.target.result; reader.readAsDataURL(input.files[0]); } }
+    function saveDiary() {
+        const content = document.getElementById('diary-content').value, tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
+        if(!content) return;
+        let diaries = db.get('diary_list', {}); diaries[selectedDate] = { content, members: tags, img: diaryTempImg };
+        db.set('diary_list', diaries); diaryTempImg = ""; document.getElementById('diary-content').value = ""; toggleDiaryForm(); renderDiaryContent();
+    }
+    function renderDiaryContent() {
+        const data = db.get('diary_list', {})[selectedDate];
+        document.getElementById('daily-merged-content').innerHTML = data ? `<div class="diary-paper"><div class="diary-content-text">${data.content}</div>${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}</div>` : `<div class="text-center p-5 text-white">💎</div>`;
+    }
+    function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; }
     function renderWeekTable() {
-        const table = document.getElementById('week-table-display');
-        if(!table) return; // 防止在非日記頁報錯
-        table.innerHTML = "";
-        const days = ['日', '一', '二', '三', '四', '五', '六'];
-        const tempDate = new Date(currentWeekStart);
+        const table = document.getElementById('week-table-display'); table.innerHTML = "";
+        const days = ['日', '一', '二', '三', '四', '五', '六'], tempDate = new Date(currentWeekStart);
         for (let i = 0; i < 7; i++) {
             const dateStr = tempDate.toISOString().split('T')[0];
             table.innerHTML += `<div class="day-item ${dateStr === selectedDate ? 'active' : ''}" onclick="syncSelectedDate('${dateStr}')"><span>${days[i]}</span>${tempDate.getDate()}</div>`;
@@ -446,20 +343,14 @@
         }
         document.getElementById('cal-month-display').innerText = `${currentWeekStart.getFullYear()}/${currentWeekStart.getMonth()+1}`;
     }
-
     function changeWeek(dir) { currentWeekStart.setDate(currentWeekStart.getDate() + (dir*7)); renderWeekTable(); }
-
     function showPage(id) {
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        
-        // 修正導覽列啟動狀態
-        const navMap = { 'finance': 0, 'profile': 1, 'diary': 2 };
-        document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
-        window.scrollTo(0, 0);
+        const navIdx = { 'finance': 1, 'profile': 2, 'diary': 3 };
+        document.querySelector(`.nav-item:nth-child(${navIdx[id]})`).classList.add('active');
     }
-
     window.onload = init;
 </script>
 </body>
