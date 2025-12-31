@@ -163,7 +163,7 @@
         renderFinance();
     }
 
-    // --- 記帳邏輯 (已替換為截取版本) ---
+    // --- 記帳邏輯 ---
     function addFinance() {
         const editId = document.getElementById('edit-fin-id').value;
         const date = document.getElementById('fin-date').value;
@@ -212,7 +212,11 @@
     }
 
     function renderFinance() {
-        const list = db.get('fin_list', []);
+        let list = db.get('fin_list', []);
+        
+        // --- 排序邏輯：日期越新越前面 ---
+        list.sort((a, b) => new Date(b.date) - new Date(a.date));
+
         document.getElementById('list-finance').innerHTML = list.map(i => `
             <div class="svt-card d-flex justify-content-between align-items-center">
                 <i class="fas fa-pencil-alt edit-icon" onclick="editFinance(${i.id})"></i>
@@ -257,7 +261,12 @@
     function goToMemberDetail(name) {
         const pics = db.get('member_pics', {});
         const finList = db.get('fin_list', []);
-        const memberFins = finList.filter(f => f.members.includes(name));
+        
+        // --- 排序邏輯：篩選後按日期排序 ---
+        const memberFins = finList
+            .filter(f => f.members.includes(name))
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+
         document.getElementById('detail-member-info').innerHTML = `
             <div class="detail-avatar">${pics[name] ? `<img src="${pics[name]}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : `<i class="fas fa-gem"></i>`}</div>
             <h3 id="detail-title">${name}</h3>`;
