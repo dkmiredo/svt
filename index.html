@@ -172,7 +172,8 @@
                 <select id="fin-currency" class="form-select" style="max-width:90px;"><option value="TWD">台幣</option><option value="KRW">韓元</option><option value="JPY">日圓</option></select>
                 <input type="number" id="fin-amt" class="form-control" placeholder="金額">
             </div>
-            <button class="btn btn-svt" onclick="addFinance()">儲存</button>
+            <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存</button>
+            <button id="btn-cancel-edit-finance" class="btn btn-sm btn-light mt-2 w-100" style="display:none;" onclick="resetFinanceForm()">取消編輯</button>
         </div>
         <div id="list-finance"></div>
     </section>
@@ -239,6 +240,7 @@
     let cropper = null;
     let currentProcessType = ''; 
     let diaryTempImg = ""; 
+    let editFinId = null; // 用於追蹤編輯中的記帳 ID
 
     function init() {
         const financeTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
@@ -256,7 +258,7 @@
         renderFinance();
     }
 
-    // --- 圖片裁切核心處理 (更新部分) ---
+    // --- 圖片裁切核心處理 ---
     function startPhotoProcess(type) {
         currentProcessType = type;
         document.getElementById('universal-uploader').click();
@@ -271,10 +273,7 @@
             img.src = event.target.result;
             document.getElementById('cropperModal').style.display = 'flex';
             if (cropper) cropper.destroy();
-            
-            // 背景比例固定 500:160，其餘(頭像)比例 1:1
             let aspectRatio = (currentProcessType === 'bg') ? 500 / 160 : 1;
-            
             cropper = new Cropper(img, { 
                 aspectRatio: aspectRatio, 
                 viewMode: 1, 
@@ -288,18 +287,13 @@
 
     function confirmCrop() {
         if (!cropper) return;
-        // 根據類型決定輸出品質與寬度
-        const canvas = cropper.getCroppedCanvas({ 
-            width: currentProcessType === 'bg' ? 1000 : 400 
-        });
+        const canvas = cropper.getCroppedCanvas({ width: currentProcessType === 'bg' ? 1000 : 400 });
         const croppedImg = canvas.toDataURL('image/jpeg', 0.8);
-        
         if (currentProcessType === 'bg' || currentProcessType === 'avatar') {
             const prof = db.get('profile', {}); 
             prof[currentProcessType] = croppedImg; 
             db.set('profile', prof);
         } else {
-            // 成員個人照片存入 member_pics
             const pics = db.get('member_pics', {}); 
             pics[currentProcessType] = croppedImg; 
             db.set('member_pics', pics);
@@ -370,7 +364,7 @@
         document.getElementById('lightbox').style.display = 'flex';
     }
 
-    // --- 成員與記帳 ---
+    // --- 成員與記帳邏輯 ---
     function openMemberModal(name) {
         const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
         const diaryData = db.get('diary_list', {});
@@ -389,28 +383,93 @@
 
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
+    // --- 優化後的記帳功能 ---
     function addFinance() {
         const date = document.getElementById('fin-date').value;
         const amt = document.getElementById('fin-amt').value;
         const category = document.getElementById('fin-category').value;
         const currency = document.getElementById('fin-currency').value;
         const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        
         if(!amt || tags.length === 0) return alert('資訊不完整');
+        
         let list = db.get('fin_list', []);
-        list.unshift({ id: Date.now(), date, members: tags, amt, currency, category });
+        
+        if (editFinId) {
+            // 編輯模式：替換原有紀錄
+            const index = list.findIndex(i => i.id === editFinId);
+            if (index !== -1) {
+                list[index] = { ...list[index], date, members: tags, amt, currency, category };
+            }
+            editFinId = null;
+        } else {
+            // 新增模式
+            list.unshift({ id: Date.now(), date, members: tags, amt, currency, category });
+        }
+        
         db.set('fin_list', list);
-        alert('記帳成功！'); renderFinance();
+        resetFinanceForm();
+        renderFinance();
+    }
+
+    function deleteFinance(id) {
+        if(!confirm('確定要刪除這筆紀錄嗎？')) return;
+        let list = db.get('fin_list', []);
+        list = list.filter(i => i.id !== id);
+        db.set('fin_list', list);
+        renderFinance();
+    }
+
+    function editFinance(id) {
+        const list = db.get('fin_list', []);
+        const item = list.find(i => i.id === id);
+        if(!item) return;
+
+        // 填入表單
+        document.getElementById('fin-date').value = item.date;
+        document.getElementById('fin-amt').value = item.amt;
+        document.getElementById('fin-category').value = item.category;
+        document.getElementById('fin-currency').value = item.currency;
+        
+        // 重置並選取成員標籤
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
+            tag.classList.toggle('active', item.members.includes(tag.innerText));
+        });
+
+        editFinId = id;
+        document.getElementById('btn-save-finance').innerText = "更新紀錄";
+        document.getElementById('btn-cancel-edit-finance').style.display = "block";
+        
+        // 捲動回頂部以便編輯
+        document.getElementById('page-finance').scrollTop = 0;
+        window.scrollTo(0,0);
+    }
+
+    function resetFinanceForm() {
+        editFinId = null;
+        document.getElementById('fin-amt').value = "";
+        document.getElementById('btn-save-finance').innerText = "儲存";
+        document.getElementById('btn-cancel-edit-finance').style.display = "none";
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.remove('active'));
     }
 
     function renderFinance() {
         const list = db.get('fin_list', []);
         document.getElementById('list-finance').innerHTML = list.map(i => `
             <div class="svt-card d-flex justify-content-between align-items-center">
-                <div><div class="small text-muted">${i.date} · ${i.category}</div><div class="fw-bold" style="color:var(--serenity)">${i.members.join(', ')}</div></div>
-                <div class="fw-bold">${i.currency} ${i.amt}</div>
+                <div>
+                    <div class="small text-muted">${i.date} · ${i.category}</div>
+                    <div class="fw-bold" style="color:var(--serenity)">${i.members.join(', ')}</div>
+                    <div class="fw-bold">${i.currency} ${i.amt}</div>
+                </div>
+                <div class="d-flex gap-3">
+                    <i class="fas fa-pen" style="color:#aaa; cursor:pointer;" onclick="editFinance(${i.id})"></i>
+                    <i class="fas fa-times" style="color:#aaa; cursor:pointer; font-size: 1.2rem;" onclick="deleteFinance(${i.id})"></i>
+                </div>
             </div>`).join('');
     }
 
+    // --- Profile 與其他渲染 ---
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
         const ratings = db.get('ratings', {});
