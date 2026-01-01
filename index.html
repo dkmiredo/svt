@@ -358,16 +358,16 @@
         if(!isHidden) resetDiaryForm();
     }
 
-    // --- 修正部分：日記圖片讀取與賦值 ---
+    // --- 強化圖片處理邏輯 ---
     function handleDiaryImage(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader(); 
             reader.onload = e => { 
-                diaryTempImg = e.target.result; // 確保取得 Base64
+                diaryTempImg = e.target.result; 
                 document.getElementById('diary-img-preview-container').innerHTML = `
                     <div class="img-preview-container">
                         <img src="${diaryTempImg}" class="img-preview-sm">
-                        <button class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
+                        <button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
                     </div>`; 
             };
             reader.readAsDataURL(input.files[0]);
@@ -377,10 +377,11 @@
     function removeDiaryImage() {
         diaryTempImg = "";
         document.getElementById('diary-img-preview-container').innerHTML = "";
-        document.getElementById('diary-img-input').value = "";
+        const fInput = document.getElementById('diary-img-input');
+        if(fInput) fInput.value = "";
     }
 
-    // --- 修正部分：確保圖片變數儲存進物件 ---
+    // --- 強化儲存邏輯，徹底解決第二篇失敗問題 ---
     function saveDiary() {
         const content = document.getElementById('diary-content').value; 
         const date = document.getElementById('diary-date').value;
@@ -391,7 +392,12 @@
         if (!diaries[date]) diaries[date] = []; 
         if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]];
 
-        const newEntry = { content, members: tags, img: diaryTempImg }; // 包含圖片
+        // 建立資料物件
+        const newEntry = { 
+            content: content, 
+            members: tags, 
+            img: diaryTempImg 
+        };
 
         if (editingDiaryIdx !== null) {
             diaries[date][editingDiaryIdx] = newEntry;
@@ -401,7 +407,10 @@
         }
 
         db.set('diary_list', diaries);
+        
+        // 關鍵：儲存後立即重置
         resetDiaryForm(); 
+        
         document.getElementById('diary-form-container').style.display = 'none';
         document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-plus"></i> 新增日記'; 
         renderDiaryContent();
@@ -414,17 +423,21 @@
         
         editingDiaryIdx = currentDiaryIndex;
         document.getElementById('diary-form-container').style.display = 'block'; 
-        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取發編輯';
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
         document.getElementById('diary-date').value = selectedDate; 
         document.getElementById('diary-content').value = data.content;
+        
         diaryTempImg = data.img || ""; 
         if(diaryTempImg) {
             document.getElementById('diary-img-preview-container').innerHTML = `
                 <div class="img-preview-container">
                     <img src="${diaryTempImg}" class="img-preview-sm">
-                    <button class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
+                    <button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
                 </div>`;
+        } else {
+            document.getElementById('diary-img-preview-container').innerHTML = "";
         }
+        
         document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members && data.members.includes(tag.innerText)));
         window.scrollTo(0, 0);
     }
@@ -481,7 +494,17 @@
         renderDiaryContent();
     }
 
-    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
+    // --- 重置函式：解決重複操作問題 ---
+    function resetDiaryForm() { 
+        editingDiaryIdx = null; 
+        diaryTempImg = ""; 
+        document.getElementById('diary-content').value = ""; 
+        document.getElementById('diary-img-preview-container').innerHTML = ""; 
+        const fInput = document.getElementById('diary-img-input');
+        if(fInput) fInput.value = ""; // 解決同一檔案選取不觸發問題
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); 
+    }
+
     function syncSelectedDate(date) { selectedDate = date; currentDiaryIndex = 0; document.getElementById('diary-date').value = date; document.getElementById('fin-date').value = date; renderWeekTable(); renderDiaryContent(); }
 
     function renderProfile() {
