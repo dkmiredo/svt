@@ -10,13 +10,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Noto+Sans+TC:wght@500&display=swap" rel="stylesheet">
     <style>
         :root { --rose-quartz: #F7CAC9; --serenity: #92A8D1; }
+        
+        /* 修正佈局：讓 body 不捲動，由 container 捲動 */
         body {
             background: linear-gradient(180deg, var(--rose-quartz) 0%, var(--serenity) 100%);
-            background-attachment: fixed; min-height: 100vh;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* 防止全螢幕捲動 */
             font-family: 'Kiwi Maru', 'Noto Sans TC', sans-serif;
             color: #555;
         }
-        .app-container { max-width: 500px; margin: 0 auto; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); min-height: 100vh; position: relative; padding-bottom: 110px; }
+
+        .app-container { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background: rgba(255, 255, 255, 0.4); 
+            backdrop-filter: blur(10px); 
+            height: 100vh; /* 撐滿螢幕高度 */
+            overflow-y: auto; /* 內容在此處捲動 */
+            position: relative; 
+            padding-bottom: 110px; /* 為底部導覽列留空間 */
+            -webkit-overflow-scrolling: touch; /* 優化手機滑動流暢度 */
+        }
         
         .page-section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .page-section.active { display: block; }
@@ -86,7 +102,24 @@
         .member-tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--serenity); color: var(--serenity); cursor: pointer; }
         .member-tag.active { background: var(--serenity); color: white; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; background: white; display: flex; justify-content: space-around; align-items: center; padding: 8px 0; border-top: 1px solid #eee; z-index: 1000; height: 75px; }
+        /* 修正導覽列：確保其固定於螢幕最下方 */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 100%; 
+            max-width: 500px; 
+            background: white; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            padding: 8px 0; 
+            border-top: 1px solid #eee; 
+            z-index: 1000; 
+            height: 75px; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
         .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; text-decoration: none; position: relative; }
         .nav-item.active { color: var(--serenity); }
         .nav-center { margin-top: -35px !important; }
@@ -206,16 +239,16 @@
             <div id="daily-merged-content"></div>
         </div>
     </section>
-
-    <nav class="bottom-nav">
-        <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i><br>記帳</div>
-        <div class="nav-item active nav-center" onclick="showPage('profile')">
-            <div class="nav-center-circle"><i class="fas fa-gem" style="font-size:1.5rem;"></i></div>
-            <span>主頁</span>
-        </div>
-        <div class="nav-item" onclick="showPage('diary')"><i class="fas fa-book"></i><br>日記</div>
-    </nav>
 </div>
+
+<nav class="bottom-nav">
+    <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i><br>記帳</div>
+    <div class="nav-item active nav-center" onclick="showPage('profile')">
+        <div class="nav-center-circle"><i class="fas fa-gem" style="font-size:1.5rem;"></i></div>
+        <span>主頁</span>
+    </div>
+    <div class="nav-item" onclick="showPage('diary')"><i class="fas fa-book"></i><br>日記</div>
+</nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
@@ -248,20 +281,16 @@
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
     }
 
-    // --- 日期同步邏輯修正 ---
     function syncSelectedDate(date) { 
         if(!date) return;
         selectedDate = date; 
         currentDiaryIndex = 0; 
-        
         document.getElementById('diary-date').value = date; 
         document.getElementById('fin-date').value = date; 
-
         let d = new Date(date);
         let day = d.getDay();
         currentWeekStart = new Date(d);
         currentWeekStart.setDate(d.getDate() - day);
-
         renderWeekTable(); 
         renderDiaryContent(); 
     }
@@ -270,35 +299,22 @@
         const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
         const diaryData = db.get('diary_list', {});
         const pics = db.get('member_pics', {});
-        
         let diaries = [];
         Object.keys(diaryData).forEach(date => {
             const list = diaryData[date];
             if (Array.isArray(list)) {
-                list.forEach(entry => {
-                    if (entry.members && entry.members.includes(name)) {
-                        diaries.push({ date, content: entry.content });
-                    }
-                });
+                list.forEach(entry => { if (entry.members && entry.members.includes(name)) diaries.push({ date, content: entry.content }); });
             } else if (list.members && list.members.includes(name)) {
                 diaries.push({ date, content: list.content });
             }
         });
-
         document.getElementById('modal-member-name').innerText = name;
         document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
         let html = `<p class="small text-muted">關於 ${name} 的所有紀錄：</p>`;
         html += `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
-        html += finList.length ? finList.map(f => `
-            <div class="sync-fin-item d-flex justify-content-between">
-                <span>${f.date} (${f.category})</span>
-                <span class="fw-bold">${f.currency} ${f.amt}</span>
-            </div>`).join('') : '<p class="small text-muted">暫無記帳紀錄</p>';
+        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date} (${f.category})</span><span class="fw-bold">${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無記帳紀錄</p>';
         html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記紀錄📔</div>`;
-        html += diaries.length ? diaries.map(d => `
-            <div class="p-2 bg-light rounded mb-2 small">
-                <b class="text-serenity">${d.date}</b><br>${d.content}
-            </div>`).join('') : '<p class="small text-muted">暫未在日記中被提及</p>';
+        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b class="text-serenity">${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫未在日記中被提及</p>';
         document.getElementById('modal-content').innerHTML = html;
         document.getElementById('memberModal').style.display = 'block';
     }
@@ -354,7 +370,8 @@
         document.getElementById('fin-amt').value = item.amt;
         document.getElementById('fin-category').value = item.category; document.getElementById('fin-currency').value = item.currency;
         document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
-        editFinId = id; document.getElementById('btn-save-finance').innerText = "更新紀錄"; document.getElementById('btn-cancel-edit-finance').style.display = "block"; window.scrollTo(0,0);
+        editFinId = id; document.getElementById('btn-save-finance').innerText = "更新紀錄"; document.getElementById('btn-cancel-edit-finance').style.display = "block"; 
+        document.querySelector('.app-container').scrollTo(0,0);
     }
     function resetFinanceForm() { editFinId = null; document.getElementById('fin-amt').value = ""; document.getElementById('btn-save-finance').innerText = "儲存"; document.getElementById('btn-cancel-edit-finance').style.display = "none"; document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
     function renderFinance() {
@@ -381,44 +398,25 @@
         if (input.files && input.files[0]) {
             const reader = new FileReader(); reader.onload = e => { 
                 diaryTempImg = e.target.result; 
-                document.getElementById('diary-img-preview-container').innerHTML = `
-                    <div class="img-preview-container">
-                        <img src="${diaryTempImg}" class="img-preview-sm">
-                        <button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
-                    </div>`; 
+                document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button></div>`; 
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
-
-    function removeDiaryImage() {
-        diaryTempImg = "";
-        document.getElementById('diary-img-preview-container').innerHTML = "";
-        const fInput = document.getElementById('diary-img-input');
-        if(fInput) fInput.value = "";
-    }
+    function removeDiaryImage() { diaryTempImg = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.getElementById('diary-img-input').value = ""; }
 
     function saveDiary() {
         const content = document.getElementById('diary-content').value; 
         const date = document.getElementById('diary-date').value;
         const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
         if(!content) return alert("請輸入內容");
-        
         let diaries = db.get('diary_list', {}); 
         if (!diaries[date]) diaries[date] = []; 
         if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]];
-
-        const newEntry = { content: content, members: tags, img: diaryTempImg };
-
-        if (editingDiaryIdx !== null) {
-            diaries[date][editingDiaryIdx] = newEntry;
-        } else {
-            diaries[date].push(newEntry);
-            currentDiaryIndex = diaries[date].length - 1;
-        }
-
-        db.set('diary_list', diaries);
-        resetDiaryForm(); 
+        const newEntry = { content, members: tags, img: diaryTempImg };
+        if (editingDiaryIdx !== null) diaries[date][editingDiaryIdx] = newEntry;
+        else { diaries[date].push(newEntry); currentDiaryIndex = diaries[date].length - 1; }
+        db.set('diary_list', diaries); resetDiaryForm(); 
         document.getElementById('diary-form-container').style.display = 'none';
         document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-plus"></i> 新增日記'; 
         renderDiaryContent();
@@ -428,23 +426,15 @@
         const list = db.get('diary_list', {})[selectedDate];
         if (!list || !list[currentDiaryIndex]) return;
         const data = list[currentDiaryIndex];
-        
         editingDiaryIdx = currentDiaryIndex;
         document.getElementById('diary-form-container').style.display = 'block'; 
         document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
         document.getElementById('diary-date').value = selectedDate; 
         document.getElementById('diary-content').value = data.content;
-        
         diaryTempImg = data.img || ""; 
-        if(diaryTempImg) {
-            document.getElementById('diary-img-preview-container').innerHTML = `
-                <div class="img-preview-container">
-                    <img src="${diaryTempImg}" class="img-preview-sm">
-                    <button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
-                </div>`;
-        }
+        if(diaryTempImg) document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button></div>`;
         document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members && data.members.includes(tag.innerText)));
-        window.scrollTo(0, 0);
+        document.querySelector('.app-container').scrollTo(0, 0);
     }
 
     function deleteDiary() { 
@@ -454,8 +444,7 @@
                 diaries[selectedDate].splice(currentDiaryIndex, 1);
                 if (diaries[selectedDate].length === 0) delete diaries[selectedDate];
                 db.set('diary_list', diaries);
-                currentDiaryIndex = 0;
-                renderDiaryContent();
+                currentDiaryIndex = 0; renderDiaryContent();
             }
         } 
     }
@@ -464,51 +453,17 @@
         const diaries = db.get('diary_list', {});
         let list = diaries[selectedDate] || [];
         if (list && !Array.isArray(list)) list = [list]; 
-
         const display = document.getElementById('daily-merged-content');
         const pager = document.getElementById('diary-pagination');
-
         if (list.length > 0) {
             if (currentDiaryIndex >= list.length) currentDiaryIndex = list.length - 1;
             const data = list[currentDiaryIndex];
-
-            pager.innerHTML = list.length > 1 ? `
-                <i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i>
-                <span>第 ${currentDiaryIndex + 1} / ${list.length} 篇</span>
-                <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>
-            ` : "";
-
-            display.innerHTML = `
-                <div class="diary-paper">
-                    <div class="diary-actions">
-                        <i class="fas fa-pen" onclick="editDiary()"></i>
-                        <i class="fas fa-times" onclick="deleteDiary()"></i>
-                    </div>
-                    <div class="diary-content-text">${data.content}</div>
-                    ${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white border me-1 small">${m}</span>`).join('')}</div>` : ''}
-                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
-                </div>`;
-        } else { 
-            pager.innerHTML = "";
-            display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`; 
-        }
+            pager.innerHTML = list.length > 1 ? `<i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i><span>第 ${currentDiaryIndex + 1} / ${list.length} 篇</span><i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>` : "";
+            display.innerHTML = `<div class="diary-paper"><div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div><div class="diary-content-text">${data.content}</div>${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white border me-1 small">${m}</span>`).join('')}</div>` : ''}${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}</div>`;
+        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`; }
     }
-
-    function changeDiaryPage(dir) {
-        currentDiaryIndex += dir;
-        renderDiaryContent();
-    }
-
-    function resetDiaryForm() { 
-        editingDiaryIdx = null; 
-        diaryTempImg = ""; 
-        document.getElementById('diary-content').value = ""; 
-        document.getElementById('diary-img-preview-container').innerHTML = ""; 
-        const fInput = document.getElementById('diary-img-input');
-        if(fInput) fInput.value = "";
-        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); 
-        document.getElementById('diary-date').value = selectedDate; 
-    }
+    function changeDiaryPage(dir) { currentDiaryIndex += dir; renderDiaryContent(); }
+    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.getElementById('diary-img-input').value = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); document.getElementById('diary-date').value = selectedDate; }
 
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
@@ -516,14 +471,7 @@
         document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
         if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
         if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
-        document.getElementById('member-ratings').innerHTML = members.map(m => `
-            <div class="svt-card d-flex align-items-center justify-content-between py-2">
-                <div class="d-flex align-items-center">
-                    <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div>
-                    <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
-                </div>
-                <div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div>
-            </div>`).join('');
+        document.getElementById('member-ratings').innerHTML = members.map(m => `<div class="svt-card d-flex align-items-center justify-content-between py-2"><div class="d-flex align-items-center"><div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div><span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span></div><div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div></div>`).join('');
     }
     function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
     function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; if(f.style.display === 'block') { document.getElementById('input-name').value = document.getElementById('display-name').innerText; document.getElementById('input-status').value = document.getElementById('display-status').innerText; } }
@@ -547,7 +495,7 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         const navMap = { 'finance': 0, 'profile': 1, 'diary': 2 };
         document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
-        window.scrollTo(0, 0);
+        document.querySelector('.app-container').scrollTo(0, 0);
     }
     function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; }
     window.onload = init;
