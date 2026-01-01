@@ -25,47 +25,34 @@
         .section-header { background-color: var(--serenity); color: white; padding: 6px 18px; border-radius: 50px; display: inline-block; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(146, 168, 209, 0.3); }
         .svt-card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(146, 168, 209, 0.2); position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
+        /* 顏色類組 */
+        .bg-serenity { background-color: var(--serenity) !important; }
+        .text-serenity { color: var(--serenity) !important; }
+
         /* 主頁樣式 */
         .profile-header { height: 160px; background: linear-gradient(45deg, var(--rose-quartz), var(--serenity)); background-size: cover; background-position: center; position: relative; border-bottom: 4px solid white; cursor: pointer; }
         .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: white; z-index: 10; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* --- 圖片裁切彈窗優化樣式 --- */
         #cropperModal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: #000; z-index: 11000; display: none; flex-direction: column; 
         }
-        .cropper-container-box { 
-            flex: 1; width: 100%; position: relative; overflow: hidden; background: #000; 
-        }
-        .crop-controls { 
-            height: 120px; background: #1a1a1a; display: flex; 
-            justify-content: center; align-items: center; gap: 60px;
-            padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #333;
-        }
-        .btn-fab { 
-            width: 65px; height: 65px; border-radius: 50%; border: none; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 1.5rem; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
+        .cropper-container-box { flex: 1; width: 100%; position: relative; overflow: hidden; background: #000; }
+        .crop-controls { height: 120px; background: #1a1a1a; display: flex; justify-content: center; align-items: center; gap: 60px; padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #333; }
+        .btn-fab { width: 65px; height: 65px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .btn-fab-ok { background: var(--serenity); color: white; }
         .btn-fab-cancel { background: #444; color: white; }
-        .btn-fab:active { transform: scale(0.9); }
 
-        /* 成員列表小圖 */
         .member-avatar-sm { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; border: 2px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .member-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-        .member-avatar-sm i { color: white; font-size: 0.8rem; }
         
         .gem-rating { font-size: 0.85rem; color: #eee; cursor: pointer; margin: 0 2px; }
         .gem-rating.active { color: var(--serenity); }
         .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; transition: 0.3s; }
-        .reset-btn:hover { color: var(--rose-quartz); transform: rotate(180deg); }
 
-        /* 彈窗樣式 */
         .member-detail-modal { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 100%; background: #fff; z-index: 2000; display: none; overflow-y: auto; padding: 25px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
         .modal-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--serenity); object-fit: cover; margin-right: 12px; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .modal-avatar i { color: white; font-size: 1.2rem; }
         .sync-fin-item { font-size: 0.8rem; background: #f0f4f8; padding: 8px; border-left: 3px solid var(--serenity); margin-bottom: 8px; border-radius: 4px; }
 
         /* --- 日記專屬樣式 --- */
@@ -76,13 +63,16 @@
         .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
         .day-item span { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 2px; }
         .day-item.active { background: var(--serenity); color: white; font-weight: bold; }
-        .day-item.active span { color: white; }
         
         .diary-paper { background: #fff; background-image: linear-gradient(#f9f9f9 1px, transparent 1px); background-size: 100% 2.5rem; line-height: 2.5rem; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; }
         .diary-paper::before { content: ''; position: absolute; left: 25px; top: 0; bottom: 0; width: 1.5px; background: rgba(247, 202, 201, 0.5); }
         .diary-content-text { margin-left: 25px; font-size: 0.95rem; color: #444; min-height: 5rem; white-space: pre-wrap; }
         .diary-thumb { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin-top: 15px; margin-left: 25px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: zoom-in; }
         
+        /* 編輯與刪除按鈕容器 */
+        .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; line-height: 1; }
+        .diary-actions i { color: #aaa; cursor: pointer; font-size: 1rem; }
+
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
         .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
 
@@ -97,6 +87,9 @@
         .nav-center { margin-top: -35px !important; }
         .nav-center-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
         .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; transition: all 0.3s; }
+        
+        /* 圖片預覽縮圖 */
+        .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -202,12 +195,15 @@
             <label class="small text-muted mb-1">內容</label>
             <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄～"></textarea>
             
-            <button class="btn btn-sm btn-outline-secondary mb-3" onclick="document.getElementById('diary-img-input').click()">
-                <i class="fas fa-camera"></i> 上傳圖片
-            </button>
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('diary-img-input').click()">
+                    <i class="fas fa-camera"></i> 上傳圖片
+                </button>
+                <div id="diary-img-preview-container"></div>
+            </div>
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
             
-            <button class="btn btn-svt" onclick="saveDiary()">儲存</button>
+            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存</button>
         </div>
 
         <div id="daily-merged-content"></div>
@@ -240,7 +236,8 @@
     let cropper = null;
     let currentProcessType = ''; 
     let diaryTempImg = ""; 
-    let editFinId = null; // 用於追蹤編輯中的記帳 ID
+    let editFinId = null;
+    let editDiaryDate = null; // 用於標記是否正在編輯某天的日記
 
     function init() {
         const financeTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
@@ -258,7 +255,7 @@
         renderFinance();
     }
 
-    // --- 圖片裁切核心處理 ---
+    // --- 圖片裁切 ---
     function startPhotoProcess(type) {
         currentProcessType = type;
         document.getElementById('universal-uploader').click();
@@ -274,13 +271,7 @@
             document.getElementById('cropperModal').style.display = 'flex';
             if (cropper) cropper.destroy();
             let aspectRatio = (currentProcessType === 'bg') ? 500 / 160 : 1;
-            cropper = new Cropper(img, { 
-                aspectRatio: aspectRatio, 
-                viewMode: 1, 
-                dragMode: 'move', 
-                autoCropArea: 0.8,
-                background: false
-            });
+            cropper = new Cropper(img, { aspectRatio, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, background: false });
         };
         reader.readAsDataURL(file);
     };
@@ -290,16 +281,11 @@
         const canvas = cropper.getCroppedCanvas({ width: currentProcessType === 'bg' ? 1000 : 400 });
         const croppedImg = canvas.toDataURL('image/jpeg', 0.8);
         if (currentProcessType === 'bg' || currentProcessType === 'avatar') {
-            const prof = db.get('profile', {}); 
-            prof[currentProcessType] = croppedImg; 
-            db.set('profile', prof);
+            const prof = db.get('profile', {}); prof[currentProcessType] = croppedImg; db.set('profile', prof);
         } else {
-            const pics = db.get('member_pics', {}); 
-            pics[currentProcessType] = croppedImg; 
-            db.set('member_pics', pics);
+            const pics = db.get('member_pics', {}); pics[currentProcessType] = croppedImg; db.set('member_pics', pics);
         }
-        renderProfile(); 
-        closeCropper();
+        renderProfile(); closeCropper();
     }
 
     function closeCropper() {
@@ -308,13 +294,105 @@
         if (cropper) cropper.destroy();
     }
 
-    // --- 日記邏輯 ---
+    // --- 優化後的日記邏輯 ---
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container');
         const btn = document.getElementById('add-diary-btn');
         const isHidden = c.style.display === 'none';
         c.style.display = isHidden ? 'block' : 'none';
         btn.innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消新增' : '<i class="fas fa-plus"></i> 新增日記';
+        if(!isHidden) resetDiaryForm();
+    }
+
+    function handleDiaryImage(input) {
+        const reader = new FileReader();
+        reader.onload = e => { 
+            diaryTempImg = e.target.result; 
+            document.getElementById('diary-img-preview-container').innerHTML = `<img src="${diaryTempImg}" class="img-preview-sm">`;
+        };
+        if(input.files[0]) reader.readAsDataURL(input.files[0]);
+    }
+
+    function saveDiary() {
+        const content = document.getElementById('diary-content').value;
+        const date = document.getElementById('diary-date').value;
+        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
+        if(!content) return alert("請輸入內容");
+        
+        let diaries = db.get('diary_list', {});
+        
+        // 如果日期改變了且原本有舊資料，刪除舊的
+        if (editDiaryDate && editDiaryDate !== date) {
+            delete diaries[editDiaryDate];
+        }
+
+        diaries[date] = { content, members: tags, img: diaryTempImg };
+        db.set('diary_list', diaries);
+        
+        resetDiaryForm();
+        if(c = document.getElementById('diary-form-container')) c.style.display = 'none';
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-plus"></i> 新增日記';
+        renderDiaryContent();
+    }
+
+    function editDiary(date) {
+        const diaries = db.get('diary_list', {});
+        const data = diaries[date];
+        if(!data) return;
+
+        editDiaryDate = date;
+        document.getElementById('diary-form-container').style.display = 'block';
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
+        
+        document.getElementById('diary-date').value = date;
+        document.getElementById('diary-content').value = data.content;
+        diaryTempImg = data.img || "";
+        
+        if(diaryTempImg) {
+            document.getElementById('diary-img-preview-container').innerHTML = `<img src="${diaryTempImg}" class="img-preview-sm">`;
+        }
+
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => {
+            tag.classList.toggle('active', data.members && data.members.includes(tag.innerText));
+        });
+
+        window.scrollTo(0, 0);
+    }
+
+    function deleteDiary(date) {
+        if(!confirm('確定要刪除這天的日記嗎？')) return;
+        let diaries = db.get('diary_list', {});
+        delete diaries[date];
+        db.set('diary_list', diaries);
+        renderDiaryContent();
+    }
+
+    function resetDiaryForm() {
+        editDiaryDate = null;
+        diaryTempImg = "";
+        document.getElementById('diary-content').value = "";
+        document.getElementById('diary-img-preview-container').innerHTML = "";
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active'));
+    }
+
+    function renderDiaryContent() {
+        const diaries = db.get('diary_list', {});
+        const data = diaries[selectedDate];
+        const display = document.getElementById('daily-merged-content');
+        if (data) {
+            display.innerHTML = `
+                <div class="diary-paper">
+                    <div class="diary-actions">
+                        <i class="fas fa-pen" onclick="editDiary('${selectedDate}')"></i>
+                        <i class="fas fa-times" onclick="deleteDiary('${selectedDate}')"></i>
+                    </div>
+                    <div class="diary-content-text">${data.content}</div>
+                    ${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white border me-1 small">${m}</span>`).join('')}</div>` : ''}
+                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
+                </div>`;
+        } else {
+            display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`;
+        }
     }
 
     function syncSelectedDate(date) {
@@ -325,123 +403,43 @@
         renderDiaryContent();
     }
 
-    function handleDiaryImage(input) {
-        const reader = new FileReader();
-        reader.onload = e => { diaryTempImg = e.target.result; alert("圖片準備就緒！"); };
-        if(input.files[0]) reader.readAsDataURL(input.files[0]);
-    }
-
-    function saveDiary() {
-        const content = document.getElementById('diary-content').value;
-        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!content) return alert("請輸入內容");
-        let diaries = db.get('diary_list', {});
-        diaries[selectedDate] = { content, members: tags, img: diaryTempImg };
-        db.set('diary_list', diaries);
-        diaryTempImg = "";
-        document.getElementById('diary-content').value = "";
-        toggleDiaryForm(); renderDiaryContent();
-    }
-
-    function renderDiaryContent() {
-        const diaries = db.get('diary_list', {});
-        const data = diaries[selectedDate];
-        const display = document.getElementById('daily-merged-content');
-        if (data) {
-            display.innerHTML = `
-                <div class="diary-paper">
-                    <div class="diary-content-text">${data.content}</div>
-                    ${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-light text-serenity border me-1 small">${m}</span>`).join('')}</div>` : ''}
-                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
-                </div>`;
-        } else {
-            display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`;
-        }
-    }
-
-    function openLightbox(src) {
-        document.getElementById('lightbox-img').src = src;
-        document.getElementById('lightbox').style.display = 'flex';
-    }
-
-    // --- 成員與記帳邏輯 ---
-    function openMemberModal(name) {
-        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
-        const diaryData = db.get('diary_list', {});
-        const pics = db.get('member_pics', {});
-        const diaries = Object.keys(diaryData).filter(date => diaryData[date].content.includes(name) || (diaryData[date].members && diaryData[date].members.includes(name))).map(date => ({ date, content: diaryData[date].content }));
-        document.getElementById('modal-member-name').innerText = name;
-        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas fa-gem"></i>`;
-        let html = `<p class="small text-muted">與 ${name} 相關紀錄：</p>`;
-        html += `<div class="fw-bold mt-3 mb-2" style="color:var(--serenity)">記帳紀錄💳</div>`;
-        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date} (${f.category})</span><span>${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無記帳紀錄</p>';
-        html += `<div class="fw-bold mt-4 mb-2" style="color:var(--serenity)">日記紀錄📔</div>`;
-        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b style="color:var(--serenity)">${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫無在日記中被提及</p>';
-        document.getElementById('modal-content').innerHTML = html;
-        document.getElementById('memberModal').style.display = 'block';
-    }
-
-    function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
-
-    // --- 優化後的記帳功能 ---
+    // --- 記帳邏輯 ---
     function addFinance() {
         const date = document.getElementById('fin-date').value;
         const amt = document.getElementById('fin-amt').value;
         const category = document.getElementById('fin-category').value;
         const currency = document.getElementById('fin-currency').value;
         const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
-        
         if(!amt || tags.length === 0) return alert('資訊不完整');
-        
         let list = db.get('fin_list', []);
-        
         if (editFinId) {
-            // 編輯模式：替換原有紀錄
             const index = list.findIndex(i => i.id === editFinId);
-            if (index !== -1) {
-                list[index] = { ...list[index], date, members: tags, amt, currency, category };
-            }
+            if (index !== -1) list[index] = { ...list[index], date, members: tags, amt, currency, category };
             editFinId = null;
         } else {
-            // 新增模式
             list.unshift({ id: Date.now(), date, members: tags, amt, currency, category });
         }
-        
         db.set('fin_list', list);
-        resetFinanceForm();
-        renderFinance();
+        resetFinanceForm(); renderFinance();
     }
 
     function deleteFinance(id) {
         if(!confirm('確定要刪除這筆紀錄嗎？')) return;
-        let list = db.get('fin_list', []);
-        list = list.filter(i => i.id !== id);
-        db.set('fin_list', list);
-        renderFinance();
+        let list = db.get('fin_list', []).filter(i => i.id !== id);
+        db.set('fin_list', list); renderFinance();
     }
 
     function editFinance(id) {
-        const list = db.get('fin_list', []);
-        const item = list.find(i => i.id === id);
+        const item = db.get('fin_list', []).find(i => i.id === id);
         if(!item) return;
-
-        // 填入表單
         document.getElementById('fin-date').value = item.date;
         document.getElementById('fin-amt').value = item.amt;
         document.getElementById('fin-category').value = item.category;
         document.getElementById('fin-currency').value = item.currency;
-        
-        // 重置並選取成員標籤
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
-            tag.classList.toggle('active', item.members.includes(tag.innerText));
-        });
-
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
         editFinId = id;
         document.getElementById('btn-save-finance').innerText = "更新紀錄";
         document.getElementById('btn-cancel-edit-finance').style.display = "block";
-        
-        // 捲動回頂部以便編輯
-        document.getElementById('page-finance').scrollTop = 0;
         window.scrollTo(0,0);
     }
 
@@ -459,17 +457,17 @@
             <div class="svt-card d-flex justify-content-between align-items-center">
                 <div>
                     <div class="small text-muted">${i.date} · ${i.category}</div>
-                    <div class="fw-bold" style="color:var(--serenity)">${i.members.join(', ')}</div>
+                    <div class="fw-bold text-serenity">${i.members.join(', ')}</div>
                     <div class="fw-bold">${i.currency} ${i.amt}</div>
                 </div>
                 <div class="d-flex gap-3">
                     <i class="fas fa-pen" style="color:#aaa; cursor:pointer;" onclick="editFinance(${i.id})"></i>
-                    <i class="fas fa-times" style="color:#aaa; cursor:pointer; font-size: 1.2rem;" onclick="deleteFinance(${i.id})"></i>
+                    <i class="fas fa-times" style="color:#aaa; cursor:pointer; font-size:1.2rem;" onclick="deleteFinance(${i.id})"></i>
                 </div>
             </div>`).join('');
     }
 
-    // --- Profile 與其他渲染 ---
+    // --- 其他渲染與導覽 ---
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
         const ratings = db.get('ratings', {});
@@ -484,7 +482,7 @@
                     <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">
                         ${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}
                     </div>
-                    <span class="fw-bold" style="color:var(--serenity); cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
+                    <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
                 </div>
                 <div class="d-flex align-items-center">
                     ${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}
@@ -494,32 +492,22 @@
     }
 
     function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
-    
     function toggleEdit() { 
-        const f = document.getElementById('edit-fields'); 
-        f.style.display = (f.style.display === 'none') ? 'block' : 'none'; 
+        const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; 
         if(f.style.display === 'block') {
             document.getElementById('input-name').value = document.getElementById('display-name').innerText;
             document.getElementById('input-status').value = document.getElementById('display-status').innerText;
         }
     }
-
     function saveProfileText() {
-        const newName = document.getElementById('input-name').value || "Carat";
-        const newStatus = document.getElementById('input-status').value || "Say the name!";
         const prof = db.get('profile', { avatar: "", bg: "" });
-        prof.name = newName; prof.status = newStatus;
-        db.set('profile', prof); 
-        renderProfile(); 
-        document.getElementById('edit-fields').style.display = 'none';
-        window.scrollTo(0, 0);
+        prof.name = document.getElementById('input-name').value || "Carat";
+        prof.status = document.getElementById('input-status').value || "Say the name!";
+        db.set('profile', prof); renderProfile(); document.getElementById('edit-fields').style.display = 'none';
     }
-
     function renderWeekTable() {
-        const table = document.getElementById('week-table-display');
-        if(!table) return;
-        table.innerHTML = "";
-        const days = ['日', '一', '二', '三', '四', '五', '六'];
+        const table = document.getElementById('week-table-display'); if(!table) return;
+        table.innerHTML = ""; const days = ['日', '一', '二', '三', '四', '五', '六'];
         const tempDate = new Date(currentWeekStart);
         for (let i = 0; i < 7; i++) {
             const dateStr = tempDate.toISOString().split('T')[0];
@@ -528,9 +516,7 @@
         }
         document.getElementById('cal-month-display').innerText = `${currentWeekStart.getFullYear()}/${currentWeekStart.getMonth()+1}`;
     }
-
     function changeWeek(dir) { currentWeekStart.setDate(currentWeekStart.getDate() + (dir*7)); renderWeekTable(); }
-
     function showPage(id) {
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
@@ -539,7 +525,8 @@
         document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
         window.scrollTo(0, 0);
     }
-
+    function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; }
+    function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
     window.onload = init;
 </script>
 </body>
