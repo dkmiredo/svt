@@ -358,12 +358,10 @@
         if(!isHidden) resetDiaryForm();
     }
 
-    // --- 修正部分：日記圖片讀取與賦值 ---
     function handleDiaryImage(input) {
         if (input.files && input.files[0]) {
-            const reader = new FileReader(); 
-            reader.onload = e => { 
-                diaryTempImg = e.target.result; // 確保取得 Base64
+            const reader = new FileReader(); reader.onload = e => { 
+                diaryTempImg = e.target.result; 
                 document.getElementById('diary-img-preview-container').innerHTML = `
                     <div class="img-preview-container">
                         <img src="${diaryTempImg}" class="img-preview-sm">
@@ -380,7 +378,6 @@
         document.getElementById('diary-img-input').value = "";
     }
 
-    // --- 修正部分：確保圖片變數儲存進物件 ---
     function saveDiary() {
         const content = document.getElementById('diary-content').value; 
         const date = document.getElementById('diary-date').value;
@@ -391,12 +388,10 @@
         if (!diaries[date]) diaries[date] = []; 
         if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]];
 
-        const newEntry = { content, members: tags, img: diaryTempImg }; // 包含圖片
-
         if (editingDiaryIdx !== null) {
-            diaries[date][editingDiaryIdx] = newEntry;
+            diaries[date][editingDiaryIdx] = { content, members: tags, img: diaryTempImg };
         } else {
-            diaries[date].push(newEntry);
+            diaries[date].push({ content, members: tags, img: diaryTempImg });
             currentDiaryIndex = diaries[date].length - 1;
         }
 
@@ -414,7 +409,7 @@
         
         editingDiaryIdx = currentDiaryIndex;
         document.getElementById('diary-form-container').style.display = 'block'; 
-        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取發編輯';
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
         document.getElementById('diary-date').value = selectedDate; 
         document.getElementById('diary-content').value = data.content;
         diaryTempImg = data.img || ""; 
@@ -481,7 +476,17 @@
         renderDiaryContent();
     }
 
-    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
+    function resetDiaryForm() { 
+        editingDiaryIdx = null; 
+        diaryTempImg = ""; 
+        document.getElementById('diary-content').value = ""; 
+        document.getElementById('diary-img-preview-container').innerHTML = ""; 
+        // 修正處：徹底清空檔案選擇器，確保下一篇可以重新觸發上傳
+        const fInput = document.getElementById('diary-img-input');
+        if(fInput) fInput.value = "";
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); 
+    }
+
     function syncSelectedDate(date) { selectedDate = date; currentDiaryIndex = 0; document.getElementById('diary-date').value = date; document.getElementById('fin-date').value = date; renderWeekTable(); renderDiaryContent(); }
 
     function renderProfile() {
