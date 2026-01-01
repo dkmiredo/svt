@@ -63,20 +63,20 @@
         .week-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
         .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
         
-        /* 優化：星期顏色控制 */
+        /* 星期顏色控制：平常灰色，選中變白 */
         .day-item span { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 2px; }
         .day-item.active { background: var(--serenity); color: white; font-weight: bold; }
-        .day-item.active span { color: #fff; } /* 只有選中時變白 */
+        .day-item.active span { color: #fff; }
         
         .diary-paper { background: #fff; background-image: linear-gradient(#f9f9f9 1px, transparent 1px); background-size: 100% 2.5rem; line-height: 2.5rem; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; }
         .diary-paper::before { content: ''; position: absolute; left: 25px; top: 0; bottom: 0; width: 1.5px; background: rgba(247, 202, 201, 0.5); }
         .diary-content-text { margin-left: 25px; font-size: 0.95rem; color: #444; min-height: 5rem; white-space: pre-wrap; }
         .diary-thumb { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin-top: 15px; margin-left: 25px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: zoom-in; }
         
-        .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; line-height: 1; }
+        .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; line-height: 1; z-index: 5; }
         .diary-actions i { color: #aaa; cursor: pointer; font-size: 1rem; }
 
-        /* 多篇日記切換器 */
+        /* 多篇日記分頁器樣式 */
         .diary-pager { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: -10px; margin-bottom: 15px; color: white; font-size: 0.85rem; }
         .diary-pager i { cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
         .diary-pager i:hover { color: var(--rose-quartz); }
@@ -237,8 +237,8 @@
     let currentProcessType = ''; 
     let diaryTempImg = ""; 
     let editFinId = null;
-    let currentDiaryIndex = 0; // 當前檢視的日記索引
-    let editingDiaryIdx = null; // 正在編輯的日記索引
+    let currentDiaryIndex = 0; // 當前檢視索引
+    let editingDiaryIdx = null; // 當前編輯索引
 
     function init() {
         const financeTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
@@ -250,7 +250,7 @@
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
     }
 
-    // --- 彈窗詳細資料邏輯 ---
+    // --- 彈窗詳細資料邏輯 (已修復) ---
     function openMemberModal(name) {
         const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
         const diaryData = db.get('diary_list', {});
@@ -258,11 +258,16 @@
         
         let diaries = [];
         Object.keys(diaryData).forEach(date => {
-            diaryData[date].forEach(entry => {
-                if (entry.members && entry.members.includes(name)) {
-                    diaries.push({ date, content: entry.content });
-                }
-            });
+            const list = diaryData[date];
+            if (Array.isArray(list)) {
+                list.forEach(entry => {
+                    if (entry.members && entry.members.includes(name)) {
+                        diaries.push({ date, content: entry.content });
+                    }
+                });
+            } else if (list.members && list.members.includes(name)) {
+                diaries.push({ date, content: list.content });
+            }
         });
 
         document.getElementById('modal-member-name').innerText = name;
@@ -351,7 +356,7 @@
             </div>`).join('');
     }
 
-    // --- 日記功能 ---
+    // --- 日記功能 (已修復多篇儲存邏輯) ---
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'); const btn = document.getElementById('add-diary-btn');
         const isHidden = c.style.display === 'none'; c.style.display = isHidden ? 'block' : 'none';
@@ -383,16 +388,15 @@
         const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
         if(!content) return alert("請輸入內容");
         
-        let diaries = db.get('diary_list', {});
-        if (!diaries[date]) diaries[date] = [];
+        let diaries = db.get('diary_list', {}); 
+        if (!diaries[date]) diaries[date] = []; 
+        if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]]; // 相容舊格式
 
         if (editingDiaryIdx !== null) {
-            // 編輯現有紀錄
             diaries[date][editingDiaryIdx] = { content, members: tags, img: diaryTempImg };
         } else {
-            // 新增紀錄（保留所有歷史）
             diaries[date].push({ content, members: tags, img: diaryTempImg });
-            currentDiaryIndex = diaries[date].length - 1; // 跳到最新一篇
+            currentDiaryIndex = diaries[date].length - 1;
         }
 
         db.set('diary_list', diaries);
@@ -403,16 +407,14 @@
     }
 
     function editDiary() {
-        const date = selectedDate;
-        const dataList = db.get('diary_list', {})[date];
-        if(!dataList || !dataList[currentDiaryIndex]) return;
+        const list = db.get('diary_list', {})[selectedDate];
+        if (!list || !list[currentDiaryIndex]) return;
+        const data = list[currentDiaryIndex];
         
-        const data = dataList[currentDiaryIndex];
         editingDiaryIdx = currentDiaryIndex;
-        
         document.getElementById('diary-form-container').style.display = 'block'; 
-        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
-        document.getElementById('diary-date').value = date; 
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取發編輯';
+        document.getElementById('diary-date').value = selectedDate; 
         document.getElementById('diary-content').value = data.content;
         diaryTempImg = data.img || ""; 
         if(diaryTempImg) {
@@ -429,45 +431,34 @@
     function deleteDiary() { 
         if(confirm('確定要刪除這篇日記嗎？')) { 
             let diaries = db.get('diary_list', {}); 
-            diaries[selectedDate].splice(currentDiaryIndex, 1);
-            if (diaries[selectedDate].length === 0) delete diaries[selectedDate];
-            db.set('diary_list', diaries);
-            currentDiaryIndex = 0;
-            renderDiaryContent(); 
+            if (diaries[selectedDate]) {
+                diaries[selectedDate].splice(currentDiaryIndex, 1);
+                if (diaries[selectedDate].length === 0) delete diaries[selectedDate];
+                db.set('diary_list', diaries);
+                currentDiaryIndex = 0;
+                renderDiaryContent();
+            }
         } 
     }
 
-    function resetDiaryForm() { 
-        editingDiaryIdx = null; 
-        diaryTempImg = ""; 
-        document.getElementById('diary-content').value = ""; 
-        document.getElementById('diary-img-preview-container').innerHTML = ""; 
-        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); 
-    }
-
     function renderDiaryContent() {
-        const allDiaries = db.get('diary_list', {});
-        const dataList = allDiaries[selectedDate]; 
+        const diaries = db.get('diary_list', {});
+        let list = diaries[selectedDate] || [];
+        if (list && !Array.isArray(list)) list = [list]; // 相容舊格式
+
         const display = document.getElementById('daily-merged-content');
         const pager = document.getElementById('diary-pagination');
-        
-        if (dataList && dataList.length > 0) {
-            // 範圍校正
-            if (currentDiaryIndex >= dataList.length) currentDiaryIndex = dataList.length - 1;
-            if (currentDiaryIndex < 0) currentDiaryIndex = 0;
 
-            const data = dataList[currentDiaryIndex];
-            
-            // 渲染切換箭頭
-            if (dataList.length > 1) {
-                pager.innerHTML = `
-                    <i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i>
-                    <span>第 ${currentDiaryIndex + 1} / ${dataList.length} 篇</span>
-                    <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>
-                `;
-            } else {
-                pager.innerHTML = "";
-            }
+        if (list.length > 0) {
+            if (currentDiaryIndex >= list.length) currentDiaryIndex = list.length - 1;
+            const data = list[currentDiaryIndex];
+
+            // 分頁器
+            pager.innerHTML = list.length > 1 ? `
+                <i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i>
+                <span>第 ${currentDiaryIndex + 1} / ${list.length} 篇</span>
+                <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>
+            ` : "";
 
             display.innerHTML = `
                 <div class="diary-paper">
@@ -490,14 +481,8 @@
         renderDiaryContent();
     }
 
-    function syncSelectedDate(date) { 
-        selectedDate = date; 
-        currentDiaryIndex = 0; // 切換日期時重置到第一篇
-        document.getElementById('diary-date').value = date; 
-        document.getElementById('fin-date').value = date; 
-        renderWeekTable(); 
-        renderDiaryContent(); 
-    }
+    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
+    function syncSelectedDate(date) { selectedDate = date; currentDiaryIndex = 0; document.getElementById('diary-date').value = date; document.getElementById('fin-date').value = date; renderWeekTable(); renderDiaryContent(); }
 
     // --- Profile 渲染 ---
     function renderProfile() {
