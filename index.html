@@ -159,7 +159,7 @@
         <div class="section-header">記帳</div>
         <div class="svt-card">
             <label class="small text-muted mb-1">日期</label>
-            <input type="date" id="fin-date" class="form-control mb-3">
+            <input type="date" id="fin-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
             <label class="small text-muted mb-1">成員（可多選）</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
             <label class="small text-muted mb-1">類別</label>
@@ -227,7 +227,7 @@
         set: (key, val) => localStorage.setItem(`${KEY_PREFIX}_${key}`, JSON.stringify(val))
     };
 
-    let selectedDate = new Date().toISOString().split('T')[0];
+    let selectedDate = new Date().toLocaleDateString('en-CA');
     let currentWeekStart = new Date();
     currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
     
@@ -246,6 +246,24 @@
         document.getElementById('fin-date').value = selectedDate;
         document.getElementById('diary-date').value = selectedDate;
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
+    }
+
+    // --- 日期同步邏輯修正 ---
+    function syncSelectedDate(date) { 
+        if(!date) return;
+        selectedDate = date; 
+        currentDiaryIndex = 0; 
+        
+        document.getElementById('diary-date').value = date; 
+        document.getElementById('fin-date').value = date; 
+
+        let d = new Date(date);
+        let day = d.getDay();
+        currentWeekStart = new Date(d);
+        currentWeekStart.setDate(d.getDate() - day);
+
+        renderWeekTable(); 
+        renderDiaryContent(); 
     }
 
     function openMemberModal(name) {
@@ -332,7 +350,8 @@
     function deleteFinance(id) { if(confirm('確定要刪除紀錄嗎？')) { let list = db.get('fin_list', []).filter(i => i.id !== id); db.set('fin_list', list); renderFinance(); } }
     function editFinance(id) {
         const item = db.get('fin_list', []).find(i => i.id === id); if(!item) return;
-        document.getElementById('fin-date').value = item.date; document.getElementById('fin-amt').value = item.amt;
+        syncSelectedDate(item.date);
+        document.getElementById('fin-amt').value = item.amt;
         document.getElementById('fin-category').value = item.category; document.getElementById('fin-currency').value = item.currency;
         document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
         editFinId = id; document.getElementById('btn-save-finance').innerText = "更新紀錄"; document.getElementById('btn-cancel-edit-finance').style.display = "block"; window.scrollTo(0,0);
@@ -358,11 +377,9 @@
         if(!isHidden) resetDiaryForm();
     }
 
-    // --- 強化圖片處理邏輯 ---
     function handleDiaryImage(input) {
         if (input.files && input.files[0]) {
-            const reader = new FileReader(); 
-            reader.onload = e => { 
+            const reader = new FileReader(); reader.onload = e => { 
                 diaryTempImg = e.target.result; 
                 document.getElementById('diary-img-preview-container').innerHTML = `
                     <div class="img-preview-container">
@@ -381,7 +398,6 @@
         if(fInput) fInput.value = "";
     }
 
-    // --- 強化儲存邏輯，徹底解決第二篇失敗問題 ---
     function saveDiary() {
         const content = document.getElementById('diary-content').value; 
         const date = document.getElementById('diary-date').value;
@@ -392,12 +408,7 @@
         if (!diaries[date]) diaries[date] = []; 
         if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]];
 
-        // 建立資料物件
-        const newEntry = { 
-            content: content, 
-            members: tags, 
-            img: diaryTempImg 
-        };
+        const newEntry = { content: content, members: tags, img: diaryTempImg };
 
         if (editingDiaryIdx !== null) {
             diaries[date][editingDiaryIdx] = newEntry;
@@ -407,10 +418,7 @@
         }
 
         db.set('diary_list', diaries);
-        
-        // 關鍵：儲存後立即重置
         resetDiaryForm(); 
-        
         document.getElementById('diary-form-container').style.display = 'none';
         document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-plus"></i> 新增日記'; 
         renderDiaryContent();
@@ -434,10 +442,7 @@
                     <img src="${diaryTempImg}" class="img-preview-sm">
                     <button type="button" class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
                 </div>`;
-        } else {
-            document.getElementById('diary-img-preview-container').innerHTML = "";
         }
-        
         document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members && data.members.includes(tag.innerText)));
         window.scrollTo(0, 0);
     }
@@ -494,18 +499,16 @@
         renderDiaryContent();
     }
 
-    // --- 重置函式：解決重複操作問題 ---
     function resetDiaryForm() { 
         editingDiaryIdx = null; 
         diaryTempImg = ""; 
         document.getElementById('diary-content').value = ""; 
         document.getElementById('diary-img-preview-container').innerHTML = ""; 
         const fInput = document.getElementById('diary-img-input');
-        if(fInput) fInput.value = ""; // 解決同一檔案選取不觸發問題
+        if(fInput) fInput.value = "";
         document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); 
+        document.getElementById('diary-date').value = selectedDate; 
     }
-
-    function syncSelectedDate(date) { selectedDate = date; currentDiaryIndex = 0; document.getElementById('diary-date').value = date; document.getElementById('fin-date').value = date; renderWeekTable(); renderDiaryContent(); }
 
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
@@ -525,17 +528,19 @@
     function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
     function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; if(f.style.display === 'block') { document.getElementById('input-name').value = document.getElementById('display-name').innerText; document.getElementById('input-status').value = document.getElementById('display-status').innerText; } }
     function saveProfileText() { const prof = db.get('profile', { avatar: "", bg: "" }); prof.name = document.getElementById('input-name').value || "Carat"; prof.status = document.getElementById('input-status').value || "Say the name!"; db.set('profile', prof); renderProfile(); document.getElementById('edit-fields').style.display = 'none'; }
+    
     function renderWeekTable() {
         const table = document.getElementById('week-table-display'); if(!table) return;
         table.innerHTML = ""; const days = ['日', '一', '二', '三', '四', '五', '六']; const tempDate = new Date(currentWeekStart);
         for (let i = 0; i < 7; i++) {
-            const dateStr = tempDate.toISOString().split('T')[0];
+            const dateStr = tempDate.toLocaleDateString('en-CA');
             table.innerHTML += `<div class="day-item ${dateStr === selectedDate ? 'active' : ''}" onclick="syncSelectedDate('${dateStr}')"><span>${days[i]}</span>${tempDate.getDate()}</div>`;
             tempDate.setDate(tempDate.getDate() + 1);
         }
         document.getElementById('cal-month-display').innerText = `${currentWeekStart.getFullYear()}/${currentWeekStart.getMonth()+1}`;
     }
     function changeWeek(dir) { currentWeekStart.setDate(currentWeekStart.getDate() + (dir*7)); renderWeekTable(); }
+    
     function showPage(id) {
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
