@@ -63,7 +63,6 @@
         .week-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
         .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
         
-        /* 星期顏色控制：平常灰色，選中變白 */
         .day-item span { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 2px; }
         .day-item.active { background: var(--serenity); color: white; font-weight: bold; }
         .day-item.active span { color: #fff; }
@@ -76,7 +75,6 @@
         .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; line-height: 1; z-index: 5; }
         .diary-actions i { color: #aaa; cursor: pointer; font-size: 1rem; }
 
-        /* 多篇日記分頁器樣式 */
         .diary-pager { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: -10px; margin-bottom: 15px; color: white; font-size: 0.85rem; }
         .diary-pager i { cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
         .diary-pager i:hover { color: var(--rose-quartz); }
@@ -237,8 +235,8 @@
     let currentProcessType = ''; 
     let diaryTempImg = ""; 
     let editFinId = null;
-    let currentDiaryIndex = 0; // 當前檢視索引
-    let editingDiaryIdx = null; // 當前編輯索引
+    let currentDiaryIndex = 0; 
+    let editingDiaryIdx = null; 
 
     function init() {
         const financeTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
@@ -250,7 +248,6 @@
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
     }
 
-    // --- 彈窗詳細資料邏輯 (已修復) ---
     function openMemberModal(name) {
         const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
         const diaryData = db.get('diary_list', {});
@@ -289,7 +286,6 @@
     }
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
-    // --- 圖片處理 ---
     function startPhotoProcess(type) { currentProcessType = type; document.getElementById('universal-uploader').click(); }
     document.getElementById('universal-uploader').onchange = function(e) {
         const file = e.target.files[0]; if (!file) return;
@@ -316,7 +312,6 @@
     }
     function closeCropper() { document.getElementById('cropperModal').style.display = 'none'; if (cropper) cropper.destroy(); }
 
-    // --- 記帳功能 ---
     function addFinance() {
         const date = document.getElementById('fin-date').value;
         const amt = document.getElementById('fin-amt').value;
@@ -356,7 +351,6 @@
             </div>`).join('');
     }
 
-    // --- 日記功能 (已修復多篇儲存邏輯) ---
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'); const btn = document.getElementById('add-diary-btn');
         const isHidden = c.style.display === 'none'; c.style.display = isHidden ? 'block' : 'none';
@@ -364,16 +358,20 @@
         if(!isHidden) resetDiaryForm();
     }
 
+    // --- 修正部分：日記圖片讀取與賦值 ---
     function handleDiaryImage(input) {
-        const reader = new FileReader(); reader.onload = e => { 
-            diaryTempImg = e.target.result; 
-            document.getElementById('diary-img-preview-container').innerHTML = `
-                <div class="img-preview-container">
-                    <img src="${diaryTempImg}" class="img-preview-sm">
-                    <button class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
-                </div>`; 
-        };
-        if(input.files[0]) reader.readAsDataURL(input.files[0]);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader(); 
+            reader.onload = e => { 
+                diaryTempImg = e.target.result; // 確保取得 Base64
+                document.getElementById('diary-img-preview-container').innerHTML = `
+                    <div class="img-preview-container">
+                        <img src="${diaryTempImg}" class="img-preview-sm">
+                        <button class="img-remove-btn" onclick="removeDiaryImage()"><i class="fas fa-times"></i></button>
+                    </div>`; 
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function removeDiaryImage() {
@@ -382,6 +380,7 @@
         document.getElementById('diary-img-input').value = "";
     }
 
+    // --- 修正部分：確保圖片變數儲存進物件 ---
     function saveDiary() {
         const content = document.getElementById('diary-content').value; 
         const date = document.getElementById('diary-date').value;
@@ -390,12 +389,14 @@
         
         let diaries = db.get('diary_list', {}); 
         if (!diaries[date]) diaries[date] = []; 
-        if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]]; // 相容舊格式
+        if (!Array.isArray(diaries[date])) diaries[date] = [diaries[date]];
+
+        const newEntry = { content, members: tags, img: diaryTempImg }; // 包含圖片
 
         if (editingDiaryIdx !== null) {
-            diaries[date][editingDiaryIdx] = { content, members: tags, img: diaryTempImg };
+            diaries[date][editingDiaryIdx] = newEntry;
         } else {
-            diaries[date].push({ content, members: tags, img: diaryTempImg });
+            diaries[date].push(newEntry);
             currentDiaryIndex = diaries[date].length - 1;
         }
 
@@ -444,7 +445,7 @@
     function renderDiaryContent() {
         const diaries = db.get('diary_list', {});
         let list = diaries[selectedDate] || [];
-        if (list && !Array.isArray(list)) list = [list]; // 相容舊格式
+        if (list && !Array.isArray(list)) list = [list]; 
 
         const display = document.getElementById('daily-merged-content');
         const pager = document.getElementById('diary-pagination');
@@ -453,7 +454,6 @@
             if (currentDiaryIndex >= list.length) currentDiaryIndex = list.length - 1;
             const data = list[currentDiaryIndex];
 
-            // 分頁器
             pager.innerHTML = list.length > 1 ? `
                 <i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i>
                 <span>第 ${currentDiaryIndex + 1} / ${list.length} 篇</span>
@@ -484,7 +484,6 @@
     function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
     function syncSelectedDate(date) { selectedDate = date; currentDiaryIndex = 0; document.getElementById('diary-date').value = date; document.getElementById('fin-date').value = date; renderWeekTable(); renderDiaryContent(); }
 
-    // --- Profile 渲染 ---
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" });
         const ratings = db.get('ratings', {}); const pics = db.get('member_pics', {});
