@@ -62,9 +62,11 @@
         .cal-month { font-weight: bold; color: var(--serenity); font-size: 1.1rem; }
         .week-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
         .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-        /* 優化1: 日一二三四五六 顯示白字 */
-        .day-item span { display: block; font-size: 0.7rem; color: #fff; margin-bottom: 2px; text-shadow: 0px 1px 2px rgba(0,0,0,0.1); }
+        
+        /* 優化：星期顏色控制 */
+        .day-item span { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 2px; }
         .day-item.active { background: var(--serenity); color: white; font-weight: bold; }
+        .day-item.active span { color: #fff; } /* 只有選中時變白 */
         
         .diary-paper { background: #fff; background-image: linear-gradient(#f9f9f9 1px, transparent 1px); background-size: 100% 2.5rem; line-height: 2.5rem; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; }
         .diary-paper::before { content: ''; position: absolute; left: 25px; top: 0; bottom: 0; width: 1.5px; background: rgba(247, 202, 201, 0.5); }
@@ -73,6 +75,11 @@
         
         .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; line-height: 1; }
         .diary-actions i { color: #aaa; cursor: pointer; font-size: 1rem; }
+
+        /* 多篇日記切換器 */
+        .diary-pager { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: -10px; margin-bottom: 15px; color: white; font-size: 0.85rem; }
+        .diary-pager i { cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
+        .diary-pager i:hover { color: var(--rose-quartz); }
 
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
         .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
@@ -88,7 +95,6 @@
         .nav-center-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
         .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; transition: all 0.3s; }
         
-        /* 優化2: 縮圖預覽容器與打叉按鈕 */
         .img-preview-container { position: relative; display: inline-block; }
         .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; display: block; }
         .img-remove-btn { position: absolute; top: -5px; right: -5px; background: white; color: #ff5e5e; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; border: none; }
@@ -197,7 +203,10 @@
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
             <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存</button>
         </div>
-        <div id="daily-merged-content"></div>
+        <div id="diary-display-area">
+            <div id="diary-pagination" class="diary-pager"></div>
+            <div id="daily-merged-content"></div>
+        </div>
     </section>
 
     <nav class="bottom-nav">
@@ -228,7 +237,8 @@
     let currentProcessType = ''; 
     let diaryTempImg = ""; 
     let editFinId = null;
-    let editDiaryDate = null;
+    let currentDiaryIndex = 0; // 當前檢視的日記索引
+    let editingDiaryIdx = null; // 正在編輯的日記索引
 
     function init() {
         const financeTags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
@@ -245,10 +255,15 @@
         const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
         const diaryData = db.get('diary_list', {});
         const pics = db.get('member_pics', {});
-        const diaries = Object.keys(diaryData).filter(date => {
-            const entry = diaryData[date];
-            return entry.members && entry.members.includes(name);
-        }).map(date => ({ date, content: diaryData[date].content }));
+        
+        let diaries = [];
+        Object.keys(diaryData).forEach(date => {
+            diaryData[date].forEach(entry => {
+                if (entry.members && entry.members.includes(name)) {
+                    diaries.push({ date, content: entry.content });
+                }
+            });
+        });
 
         document.getElementById('modal-member-name').innerText = name;
         document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
@@ -340,11 +355,10 @@
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'); const btn = document.getElementById('add-diary-btn');
         const isHidden = c.style.display === 'none'; c.style.display = isHidden ? 'block' : 'none';
-        btn.innerHTML = isHidden ? '<i class="fas fa-plus"></i> 新增日記' : '<i class="fas fa-plus"></i> 新增日記';
+        btn.innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消新增' : '<i class="fas fa-plus"></i> 新增日記';
         if(!isHidden) resetDiaryForm();
     }
 
-    // 優化2: 日記圖片處理，增加刪除縮圖按鈕
     function handleDiaryImage(input) {
         const reader = new FileReader(); reader.onload = e => { 
             diaryTempImg = e.target.result; 
@@ -364,18 +378,42 @@
     }
 
     function saveDiary() {
-        const content = document.getElementById('diary-content').value; const date = document.getElementById('diary-date').value;
+        const content = document.getElementById('diary-content').value; 
+        const date = document.getElementById('diary-date').value;
         const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
         if(!content) return alert("請輸入內容");
-        let diaries = db.get('diary_list', {}); if (editDiaryDate && editDiaryDate !== date) delete diaries[editDiaryDate];
-        diaries[date] = { content, members: tags, img: diaryTempImg }; db.set('diary_list', diaries);
-        resetDiaryForm(); document.getElementById('diary-form-container').style.display = 'none';
-        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-plus"></i> 新增日記'; renderDiaryContent();
+        
+        let diaries = db.get('diary_list', {});
+        if (!diaries[date]) diaries[date] = [];
+
+        if (editingDiaryIdx !== null) {
+            // 編輯現有紀錄
+            diaries[date][editingDiaryIdx] = { content, members: tags, img: diaryTempImg };
+        } else {
+            // 新增紀錄（保留所有歷史）
+            diaries[date].push({ content, members: tags, img: diaryTempImg });
+            currentDiaryIndex = diaries[date].length - 1; // 跳到最新一篇
+        }
+
+        db.set('diary_list', diaries);
+        resetDiaryForm(); 
+        document.getElementById('diary-form-container').style.display = 'none';
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-plus"></i> 新增日記'; 
+        renderDiaryContent();
     }
-    function editDiary(date) {
-        const data = db.get('diary_list', {})[date]; if(!data) return;
-        editDiaryDate = date; document.getElementById('diary-form-container').style.display = 'block'; document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
-        document.getElementById('diary-date').value = date; document.getElementById('diary-content').value = data.content;
+
+    function editDiary() {
+        const date = selectedDate;
+        const dataList = db.get('diary_list', {})[date];
+        if(!dataList || !dataList[currentDiaryIndex]) return;
+        
+        const data = dataList[currentDiaryIndex];
+        editingDiaryIdx = currentDiaryIndex;
+        
+        document.getElementById('diary-form-container').style.display = 'block'; 
+        document.getElementById('add-diary-btn').innerHTML = '<i class="fas fa-times"></i> 取消編輯';
+        document.getElementById('diary-date').value = date; 
+        document.getElementById('diary-content').value = data.content;
         diaryTempImg = data.img || ""; 
         if(diaryTempImg) {
             document.getElementById('diary-img-preview-container').innerHTML = `
@@ -387,15 +425,79 @@
         document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members && data.members.includes(tag.innerText)));
         window.scrollTo(0, 0);
     }
-    function deleteDiary(date) { if(confirm('確定要刪除日記嗎？')) { let diaries = db.get('diary_list', {}); delete diaries[date]; db.set('diary_list', diaries); renderDiaryContent(); } }
-    function resetDiaryForm() { editDiaryDate = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
-    function renderDiaryContent() {
-        const data = db.get('diary_list', {})[selectedDate]; const display = document.getElementById('daily-merged-content');
-        if (data) {
-            display.innerHTML = `<div class="diary-paper"><div class="diary-actions"><i class="fas fa-pen" onclick="editDiary('${selectedDate}')"></i><i class="fas fa-times" onclick="deleteDiary('${selectedDate}')"></i></div><div class="diary-content-text">${data.content}</div>${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white border me-1 small">${m}</span>`).join('')}</div>` : ''}${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}</div>`;
-        } else { display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`; }
+
+    function deleteDiary() { 
+        if(confirm('確定要刪除這篇日記嗎？')) { 
+            let diaries = db.get('diary_list', {}); 
+            diaries[selectedDate].splice(currentDiaryIndex, 1);
+            if (diaries[selectedDate].length === 0) delete diaries[selectedDate];
+            db.set('diary_list', diaries);
+            currentDiaryIndex = 0;
+            renderDiaryContent(); 
+        } 
     }
-    function syncSelectedDate(date) { selectedDate = date; document.getElementById('diary-date').value = date; document.getElementById('fin-date').value = date; renderWeekTable(); renderDiaryContent(); }
+
+    function resetDiaryForm() { 
+        editingDiaryIdx = null; 
+        diaryTempImg = ""; 
+        document.getElementById('diary-content').value = ""; 
+        document.getElementById('diary-img-preview-container').innerHTML = ""; 
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); 
+    }
+
+    function renderDiaryContent() {
+        const allDiaries = db.get('diary_list', {});
+        const dataList = allDiaries[selectedDate]; 
+        const display = document.getElementById('daily-merged-content');
+        const pager = document.getElementById('diary-pagination');
+        
+        if (dataList && dataList.length > 0) {
+            // 範圍校正
+            if (currentDiaryIndex >= dataList.length) currentDiaryIndex = dataList.length - 1;
+            if (currentDiaryIndex < 0) currentDiaryIndex = 0;
+
+            const data = dataList[currentDiaryIndex];
+            
+            // 渲染切換箭頭
+            if (dataList.length > 1) {
+                pager.innerHTML = `
+                    <i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i>
+                    <span>第 ${currentDiaryIndex + 1} / ${dataList.length} 篇</span>
+                    <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>
+                `;
+            } else {
+                pager.innerHTML = "";
+            }
+
+            display.innerHTML = `
+                <div class="diary-paper">
+                    <div class="diary-actions">
+                        <i class="fas fa-pen" onclick="editDiary()"></i>
+                        <i class="fas fa-times" onclick="deleteDiary()"></i>
+                    </div>
+                    <div class="diary-content-text">${data.content}</div>
+                    ${data.members && data.members.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white border me-1 small">${m}</span>`).join('')}</div>` : ''}
+                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
+                </div>`;
+        } else { 
+            pager.innerHTML = "";
+            display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有日記呢～💎</div>`; 
+        }
+    }
+
+    function changeDiaryPage(dir) {
+        currentDiaryIndex += dir;
+        renderDiaryContent();
+    }
+
+    function syncSelectedDate(date) { 
+        selectedDate = date; 
+        currentDiaryIndex = 0; // 切換日期時重置到第一篇
+        document.getElementById('diary-date').value = date; 
+        document.getElementById('fin-date').value = date; 
+        renderWeekTable(); 
+        renderDiaryContent(); 
+    }
 
     // --- Profile 渲染 ---
     function renderProfile() {
