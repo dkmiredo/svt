@@ -43,7 +43,6 @@
         .text-serenity { color: var(--serenity) !important; }
         .bg-serenity { background-color: var(--serenity) !important; }
         
-        /* 優化後的類別標籤樣式 */
         .category-badge { 
             background-color: var(--rose-quartz); 
             color: white; 
@@ -121,6 +120,18 @@
         .img-remove-btn { position: absolute; top: -5px; right: -5px; background: white; color: #ff5e5e; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; border: none; }
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
         .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
+        
+        .member-name-input {
+            border: 1px solid var(--serenity);
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-size: 0.9rem;
+            color: var(--serenity);
+            width: 100px;
+            outline: none;
+            background: rgba(255,255,255,0.8);
+        }
+        .member-name-display { cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
@@ -182,10 +193,10 @@
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="fin-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
             
-            <label class="small text-muted mb-1">項目類別</label>
+            <label class="small text-muted mb-1">類別</label>
             <select id="fin-category" class="form-select mb-3">
                 <option value="專輯">專輯 💿</option>
-                <option value="周邊">💖</option>
+                <option value="周邊">周邊 💖</option>
                 <option value="演唱會">演唱會 🎤</option>
                 <option value="小卡">小卡 🫰🏻</option>
                 <option value="其他">其他 ✨</option>
@@ -267,14 +278,22 @@
     currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
     
     let cropper = null, currentProcessType = '', diaryTempImg = "", editFinId = null, currentDiaryIndex = 0, editingDiaryIdx = null;
+    
+    // 用於處理單擊與雙擊衝突的計時器
+    let clickTimer = null;
 
     function init() {
-        const tags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
-        document.getElementById('fin-member-multi').innerHTML = tags;
-        document.getElementById('diary-member-multi').innerHTML = tags;
+        refreshAllMemberTags();
         document.getElementById('fin-date').value = selectedDate;
         document.getElementById('diary-date').value = selectedDate;
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
+    }
+
+    function refreshAllMemberTags() {
+        const customNames = db.get('custom_member_names', {});
+        const tags = members.map(m => `<span class="member-tag" data-original="${m}" onclick="this.classList.toggle('active')">${customNames[m] || m}</span>`).join('');
+        document.getElementById('fin-member-multi').innerHTML = tags;
+        document.getElementById('diary-member-multi').innerHTML = tags;
     }
 
     function syncSelectedDate(date) { 
@@ -293,7 +312,7 @@
         const amt = document.getElementById('fin-amt').value;
         const cat = document.getElementById('fin-category').value;
         const note = document.getElementById('fin-note').value;
-        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.getAttribute('data-original'));
         
         if(!amt) return alert('請輸入金額');
         if(!tags.length) return alert('請選擇成員');
@@ -324,11 +343,14 @@
 
     function renderFinance() {
         const list = db.get('fin_list', []);
-        document.getElementById('list-finance').innerHTML = list.map(i => `
+        const customNames = db.get('custom_member_names', {});
+        document.getElementById('list-finance').innerHTML = list.map(i => {
+            const displayMembers = i.members.map(m => customNames[m] || m).join(', ');
+            return `
             <div class="svt-card d-flex justify-content-between align-items-center">
                 <div style="flex: 1;">
                     <div class="small text-muted mb-1">${i.date} <span class="category-badge ms-1">${i.category}</span></div>
-                    <div class="fw-bold text-serenity">${i.members.join(', ')}</div>
+                    <div class="fw-bold text-serenity">${displayMembers}</div>
                     ${i.note ? `<div class="small text-muted" style="font-style: italic;"># ${i.note}</div>` : ''}
                     <div>${i.currency} ${i.amt}</div>
                 </div>
@@ -336,7 +358,8 @@
                     <i class="fas fa-pen text-muted" onclick="editFin(${i.id})"></i>
                     <i class="fas fa-trash text-muted" onclick="delFin(${i.id})"></i>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     function editFin(id) {
@@ -349,10 +372,12 @@
         editFinId = id;
         document.getElementById('btn-save-finance').innerText = "更新紀錄";
         document.getElementById('btn-cancel-edit-finance').style.display = "block";
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
+            tag.classList.toggle('active', item.members.includes(tag.getAttribute('data-original')));
+        });
     }
 
-    function delFin(id) { if(confirm('確定刪除此筆記帳？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
+    function delFin(id) { if(confirm('確定刪除？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
 
     function resetFinanceForm() {
         editFinId = null;
@@ -385,7 +410,7 @@
 
     function saveDiary() {
         const content = document.getElementById('diary-content').value, date = document.getElementById('diary-date').value;
-        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
+        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.getAttribute('data-original'));
         if(!content) return alert("記得填寫內容～");
         let diaries = db.get('diary_list', {});
         if (!Array.isArray(diaries[date])) diaries[date] = diaries[date] ? [diaries[date]] : [];
@@ -397,6 +422,7 @@
 
     function renderDiaryContent() {
         const diaries = db.get('diary_list', {}); let list = diaries[selectedDate] || [];
+        const customNames = db.get('custom_member_names', {});
         if (!Array.isArray(list)) list = [list];
         const display = document.getElementById('daily-merged-content'), pager = document.getElementById('diary-pagination');
         if (list.length > 0) {
@@ -407,7 +433,7 @@
                 <div class="diary-paper">
                     <div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div>
                     <div class="diary-content-text">${data.content}</div>
-                    ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${m}</span>`).join('')}</div>` : ''}
+                    ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${customNames[m] || m}</span>`).join('')}</div>` : ''}
                     ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
                 </div>`;
         } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢～💎</div>`; }
@@ -421,7 +447,9 @@
             diaryTempImg = data.img;
             document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`;
         }
-        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members?.includes(tag.innerText)));
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => {
+            tag.classList.toggle('active', data.members?.includes(tag.getAttribute('data-original')));
+        });
     }
 
     function deleteDiary() { if(confirm('確定刪除？')) { let d = db.get('diary_list', {}); d[selectedDate].splice(currentDiaryIndex, 1); db.set('diary_list', d); currentDiaryIndex = 0; renderDiaryContent(); } }
@@ -429,17 +457,19 @@
     function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
 
     // --- 其他主頁與通用功能 ---
-    function openMemberModal(name) {
-        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
+    function openMemberModal(originalName) {
+        const customNames = db.get('custom_member_names', {});
+        const displayName = customNames[originalName] || originalName;
+        const finList = db.get('fin_list', []).filter(i => i.members.includes(originalName));
         const diaryData = db.get('diary_list', {});
         const pics = db.get('member_pics', {});
         let diaries = [];
         Object.keys(diaryData).forEach(date => {
             let list = Array.isArray(diaryData[date]) ? diaryData[date] : [diaryData[date]];
-            list.forEach(entry => { if (entry.members?.includes(name)) diaries.push({ date, ...entry }); });
+            list.forEach(entry => { if (entry.members?.includes(originalName)) diaries.push({ date, ...entry }); });
         });
-        document.getElementById('modal-member-name').innerText = name;
-        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
+        document.getElementById('modal-member-name').innerText = displayName;
+        document.getElementById('modal-member-avatar').innerHTML = pics[originalName] ? `<img src="${pics[originalName]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
         
         let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
         html += finList.length ? finList.map(f => `
@@ -467,20 +497,80 @@
     }
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
+    // --- 成員點擊邏輯優化 ---
+    function handleMemberNameClick(event, originalName) {
+        // 如果目前是在 Input 狀態，不執行單擊開啟 Modal
+        if (event.target.tagName === 'INPUT') return;
+
+        // 清除先前的計時器
+        if (clickTimer) clearTimeout(clickTimer);
+
+        // 設定延遲觸發
+        clickTimer = setTimeout(() => {
+            openMemberModal(originalName);
+            clickTimer = null;
+        }, 250); // 250ms 是區分單雙擊的理想時間
+    }
+
+    function handleMemberNameDblClick(event, originalName) {
+        // 雙擊時立即取消單擊的延遲執行
+        if (clickTimer) {
+            clearTimeout(clickTimer);
+            clickTimer = null;
+        }
+        editMemberName(originalName);
+    }
+
+    function editMemberName(originalName) {
+        const container = document.getElementById(`name-container-${originalName.replace(/\s+/g, '-')}`);
+        const customNames = db.get('custom_member_names', {});
+        const currentName = customNames[originalName] || originalName;
+        
+        container.innerHTML = `<input type="text" class="member-name-input" value="${currentName}" onblur="saveMemberName('${originalName}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">`;
+        container.querySelector('input').focus();
+    }
+
+    function saveMemberName(originalName, newName) {
+        const customNames = db.get('custom_member_names', {});
+        if(newName && newName.trim() !== "") {
+            customNames[originalName] = newName.trim();
+        } else {
+            delete customNames[originalName];
+        }
+        db.set('custom_member_names', customNames);
+        
+        refreshAllMemberTags();
+        renderProfile();
+        renderFinance();
+        renderDiaryContent();
+    }
+
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" }), ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
+        const customNames = db.get('custom_member_names', {});
+        
         document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
         if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
         if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
-        document.getElementById('member-ratings').innerHTML = members.map(m => `
+        
+        document.getElementById('member-ratings').innerHTML = members.map(m => {
+            const displayName = customNames[m] || m;
+            const mId = m.replace(/\s+/g, '-');
+            return `
             <div class="svt-card d-flex align-items-center justify-content-between py-2">
                 <div class="d-flex align-items-center">
                     <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div>
-                    <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
+                    <div id="name-container-${mId}" class="member-name-display" 
+                         onclick="handleMemberNameClick(event, '${m}')" 
+                         ondblclick="handleMemberNameDblClick(event, '${m}')">
+                        <span class="fw-bold text-serenity">${displayName}</span>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
+
     function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
     function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
     function saveProfileText() { const prof = db.get('profile', {}); prof.name = document.getElementById('input-name').value || "Carat"; prof.status = document.getElementById('input-status').value || "Say the name!"; db.set('profile', prof); renderProfile(); toggleEdit(); }
@@ -524,7 +614,10 @@
         closeMemberModal();
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach((n, idx) => n.classList.toggle('active', ['finance', 'profile', 'diary'][idx] === id));
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems[0].classList.toggle('active', id === 'finance');
+        navItems[1].classList.toggle('active', id === 'profile');
+        navItems[2].classList.toggle('active', id === 'diary');
     }
     function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; }
     window.onload = init;
