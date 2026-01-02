@@ -40,71 +40,47 @@
         .section-header { background-color: var(--serenity); color: white; padding: 6px 18px; border-radius: 50px; display: inline-block; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(146, 168, 209, 0.3); }
         .svt-card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(146, 168, 209, 0.2); position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
-        .bg-serenity { background-color: var(--serenity) !important; }
         .text-serenity { color: var(--serenity) !important; }
+        .bg-serenity { background-color: var(--serenity) !important; }
 
         .profile-header { height: 160px; background: linear-gradient(45deg, var(--rose-quartz), var(--serenity)); background-size: cover; background-position: center; position: relative; border-bottom: 4px solid white; cursor: pointer; }
         .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: white; z-index: 10; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        #cropperModal { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: #000; z-index: 11000; display: none; flex-direction: column; 
-        }
-        .cropper-container-box { flex: 1; width: 100%; position: relative; overflow: hidden; background: #000; }
-        .crop-controls { 
-            height: 160px; background: rgba(26, 26, 26, 0.95); display: flex; justify-content: center; 
-            align-items: flex-start; gap: 60px; padding-top: 25px; padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid #333; 
-        }
-        .btn-fab { width: 65px; height: 65px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .btn-fab-ok { background: var(--serenity); color: white; }
-        .btn-fab-cancel { background: #444; color: white; }
-
-        .member-avatar-sm { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; border: 2px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
-        .member-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .gem-rating { font-size: 0.85rem; color: #eee; cursor: pointer; margin: 0 2px; }
-        .gem-rating.active { color: var(--serenity); }
-        .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; transition: 0.3s; }
-
-        /* 優化：偽頁面疊加法 */
+        /* 詳細資料偽頁面 */
         .member-detail-modal { 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; 
-            min-height: 100%; 
-            background: #fff; 
-            z-index: 900; /* 低於導覽列 1000 */
-            display: none; 
-            overflow-y: auto; 
-            padding: 25px 25px 90px 25px; /* 底部留白避開導覽列 */
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; 
+            background: #fff; z-index: 900; display: none; overflow-y: auto; 
+            padding: 25px 25px 90px 25px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
             animation: fadeIn 0.3s ease;
         }
         .modal-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--serenity); object-fit: cover; margin-right: 12px; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .sync-fin-item { font-size: 0.8rem; background: #f0f4f8; padding: 8px; border-left: 3px solid var(--serenity); margin-bottom: 8px; border-radius: 4px; }
 
+        .member-avatar-sm { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; border: 2px solid white; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+        .member-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+        .gem-rating { font-size: 0.85rem; color: #eee; cursor: pointer; margin: 0 2px; }
+        .gem-rating.active { color: var(--serenity); }
+        .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; }
+
+        /* 日記樣式 */
         .calendar-nav { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(146,168,209,0.2); }
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .cal-month { font-weight: bold; color: var(--serenity); font-size: 1.1rem; }
         .week-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-        .day-item span { display: block; font-size: 0.7rem; color: #aaa; margin-bottom: 2px; }
+        .day-item { padding: 8px 0; border-radius: 10px; cursor: pointer; font-size: 0.85rem; }
+        .day-item span { display: block; font-size: 0.7rem; color: #aaa; }
         .day-item.active { background: var(--serenity); color: white; font-weight: bold; }
         .day-item.active span { color: #fff; }
-        
+
         .diary-paper { background: #fff; background-image: linear-gradient(#f9f9f9 1px, transparent 1px); background-size: 100% 2.5rem; line-height: 2.5rem; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; }
         .diary-paper::before { content: ''; position: absolute; left: 25px; top: 0; bottom: 0; width: 1.5px; background: rgba(247, 202, 201, 0.5); }
         .diary-content-text { margin-left: 25px; font-size: 0.95rem; color: #444; min-height: 5rem; white-space: pre-wrap; }
         .diary-thumb { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin-top: 15px; margin-left: 25px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: zoom-in; }
-        .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; line-height: 1; z-index: 5; }
-        .diary-actions i { color: #aaa; cursor: pointer; font-size: 1rem; }
+        .diary-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 15px; z-index: 5; line-height: 1; }
+        .diary-actions i { color: #aaa; cursor: pointer; }
         .diary-pager { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: -10px; margin-bottom: 15px; color: white; font-size: 0.85rem; }
-        .diary-pager i { cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
-
-        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
-        .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
+        .diary-pager i { cursor: pointer; font-size: 1.2rem; }
 
         .member-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #fdfdfd; padding: 12px; border-radius: 12px; border: 1px solid #eee; max-height: 160px; overflow-y: auto; }
         .member-tag { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--serenity); color: var(--serenity); cursor: pointer; }
@@ -115,22 +91,29 @@
             background: white; display: flex; justify-content: space-around; align-items: center; 
             padding: 8px 0; border-top: 1px solid #eee; z-index: 1000; height: 75px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
-        .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; position: relative; }
+        .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; }
         .nav-item.active { color: var(--serenity); }
         .nav-center { margin-top: -35px !important; }
         .nav-center-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
-        .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; transition: all 0.3s; }
+        .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; }
+
+        #cropperModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 11000; display: none; flex-direction: column; }
+        .cropper-container-box { flex: 1; width: 100%; position: relative; overflow: hidden; }
+        .crop-controls { height: 160px; background: rgba(26, 26, 26, 0.95); display: flex; justify-content: center; align-items: flex-start; gap: 60px; padding-top: 25px; }
+        .btn-fab { width: 65px; height: 65px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .btn-fab-ok { background: var(--serenity); color: white; }
+        .btn-fab-cancel { background: #444; color: white; }
         
         .img-preview-container { position: relative; display: inline-block; }
-        .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; display: block; }
+        .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-top: 5px; }
         .img-remove-btn { position: absolute; top: -5px; right: -5px; background: white; color: #ff5e5e; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; border: none; }
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
+        .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
     </style>
 </head>
 <body>
 
-<div id="lightbox" class="lightbox" onclick="this.style.display='none'">
-    <img src="" id="lightbox-img">
-</div>
+<div id="lightbox" class="lightbox" onclick="this.style.display='none'"><img src="" id="lightbox-img"></div>
 
 <div class="app-container" id="mainContainer">
     <input type="file" id="universal-uploader" style="display:none;" accept="image/*">
@@ -188,10 +171,6 @@
             <input type="date" id="fin-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
             <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
-            <label class="small text-muted mb-1">類別</label>
-            <select id="fin-category" class="form-select mb-3">
-                <option>專輯</option><option>小卡</option><option>周邊</option><option>其他</option>
-            </select>
             <label class="small text-muted mb-1">金額</label>
             <div class="input-group mb-3">
                 <select id="fin-currency" class="form-select" style="max-width:90px;"><option value="TWD">台幣</option><option value="KRW">韓元</option><option value="JPY">日圓</option></select>
@@ -215,17 +194,17 @@
         </div>
         <button id="add-diary-btn" class="btn btn-svt mb-3" onclick="toggleDiaryForm()"><i class="fas fa-plus"></i> 新增日記</button>
         <div id="diary-form-container" class="svt-card" style="display:none;">
-            <label class="small text-muted mb-1">選擇日期</label>
+            <label class="small text-muted mb-1">日期</label>
             <input type="date" id="diary-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
-            <label class="small text-muted mb-1">成員</label>
+            <label class="small text-muted mb-1">提及成員</label>
             <div id="diary-member-multi" class="member-checkbox-group mb-3"></div>
-            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄～"></textarea>
+            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄什麼呢？"></textarea>
             <div class="d-flex align-items-center gap-3 mb-3">
                 <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('diary-img-input').click()"><i class="fas fa-camera"></i> 上傳圖片</button>
                 <div id="diary-img-preview-container"></div>
             </div>
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
-            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存</button>
+            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存日記</button>
         </div>
         <div id="diary-display-area">
             <div id="diary-pagination" class="diary-pager"></div>
@@ -278,6 +257,7 @@
         renderWeekTable(); renderDiaryContent(); 
     }
 
+    // --- 詳細資料 (疊加法) ---
     function openMemberModal(name) {
         const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
         const diaryData = db.get('diary_list', {});
@@ -289,20 +269,100 @@
         });
         document.getElementById('modal-member-name').innerText = name;
         document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
-        let html = `<p class="small text-muted">關於 ${name} 的所有紀錄：</p>`;
-        html += `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
-        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date}</span><span class="fw-bold">${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無記帳紀錄</p>';
-        html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記紀錄📔</div>`;
-        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b class="text-serenity">${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫未在日記中被提及</p>';
+        let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
+        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date}</span><span>${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無紀錄</p>';
+        html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記提及📔</div>`;
+        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b>${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫無提及</p>';
         document.getElementById('modal-content').innerHTML = html;
-        
-        // 偽頁面顯示邏輯
-        const modal = document.getElementById('memberModal');
-        modal.style.display = 'block';
-        document.getElementById('mainContainer').scrollTo(0, 0); // 讓外部容器滾回頂部顯示偽頁面
+        document.getElementById('memberModal').style.display = 'block';
+        document.getElementById('mainContainer').scrollTo(0, 0);
     }
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
+    // --- 日記邏輯 ---
+    function toggleDiaryForm() {
+        const c = document.getElementById('diary-form-container'), isHidden = c.style.display === 'none';
+        c.style.display = isHidden ? 'block' : 'none';
+        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消' : '<i class="fas fa-plus"></i> 新增日記';
+        if(!isHidden) resetDiaryForm();
+    }
+
+    function handleDiaryImage(input) {
+        if (input.files?.[0]) {
+            const r = new FileReader();
+            r.onload = e => { 
+                diaryTempImg = e.target.result; 
+                document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`;
+            };
+            r.readAsDataURL(input.files[0]);
+        }
+    }
+    function removeDiaryImage() { diaryTempImg = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; }
+
+    function saveDiary() {
+        const content = document.getElementById('diary-content').value, date = document.getElementById('diary-date').value;
+        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
+        if(!content) return alert("內容不能為空");
+        let diaries = db.get('diary_list', {});
+        if (!Array.isArray(diaries[date])) diaries[date] = diaries[date] ? [diaries[date]] : [];
+        const entry = { content, members: tags, img: diaryTempImg };
+        if (editingDiaryIdx !== null) diaries[date][editingDiaryIdx] = entry;
+        else { diaries[date].push(entry); currentDiaryIndex = diaries[date].length - 1; }
+        db.set('diary_list', diaries); toggleDiaryForm(); renderDiaryContent();
+    }
+
+    function renderDiaryContent() {
+        const diaries = db.get('diary_list', {}); let list = diaries[selectedDate] || [];
+        if (!Array.isArray(list)) list = [list];
+        const display = document.getElementById('daily-merged-content'), pager = document.getElementById('diary-pagination');
+        if (list.length > 0) {
+            if (currentDiaryIndex >= list.length) currentDiaryIndex = list.length - 1;
+            const data = list[currentDiaryIndex];
+            pager.innerHTML = list.length > 1 ? `<i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i> <span>${currentDiaryIndex+1} / ${list.length}</span> <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>` : "";
+            display.innerHTML = `
+                <div class="diary-paper">
+                    <div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div>
+                    <div class="diary-content-text">${data.content}</div>
+                    ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${m}</span>`).join('')}</div>` : ''}
+                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
+                </div>`;
+        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢💎</div>`; }
+    }
+
+    function editDiary() {
+        const list = db.get('diary_list', {})[selectedDate];
+        const data = list[currentDiaryIndex]; editingDiaryIdx = currentDiaryIndex;
+        toggleDiaryForm(); document.getElementById('diary-content').value = data.content;
+        if(data.img) {
+            diaryTempImg = data.img;
+            document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`;
+        }
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members?.includes(tag.innerText)));
+    }
+
+    function deleteDiary() { if(confirm('確定刪除？')) { let d = db.get('diary_list', {}); d[selectedDate].splice(currentDiaryIndex, 1); db.set('diary_list', d); currentDiaryIndex = 0; renderDiaryContent(); } }
+    function changeDiaryPage(dir) { const len = (db.get('diary_list', {})[selectedDate] || []).length; currentDiaryIndex = (currentDiaryIndex + dir + len) % len; renderDiaryContent(); }
+    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
+
+    // --- 其他功能 ---
+    function renderProfile() {
+        const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" }), ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
+        document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
+        if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
+        if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
+        document.getElementById('member-ratings').innerHTML = members.map(m => `
+            <div class="svt-card d-flex align-items-center justify-content-between py-2">
+                <div class="d-flex align-items-center">
+                    <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div>
+                    <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
+                </div>
+                <div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div>
+            </div>`).join('');
+    }
+    function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
+    function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
+    function saveProfileText() { const prof = db.get('profile', {}); prof.name = document.getElementById('input-name').value || "Carat"; prof.status = document.getElementById('input-status').value || "Say the name!"; db.set('profile', prof); renderProfile(); toggleEdit(); }
+    
     function startPhotoProcess(type) { currentProcessType = type; document.getElementById('universal-uploader').click(); }
     document.getElementById('universal-uploader').onchange = function(e) {
         const file = e.target.files[0]; if (!file) return;
@@ -316,87 +376,28 @@
         reader.readAsDataURL(file);
     };
     function confirmCrop() {
-        const canvas = cropper.getCroppedCanvas({ width: currentProcessType === 'bg' ? 1000 : 400 });
-        const croppedImg = canvas.toDataURL('image/jpeg', 0.8);
-        if (['bg','avatar'].includes(currentProcessType)) {
-            const prof = db.get('profile', {}); prof[currentProcessType] = croppedImg; db.set('profile', prof);
-        } else {
-            const pics = db.get('member_pics', {}); pics[currentProcessType] = croppedImg; db.set('member_pics', pics);
-        }
+        const croppedImg = cropper.getCroppedCanvas().toDataURL('image/jpeg', 0.8);
+        if (['bg','avatar'].includes(currentProcessType)) { const prof = db.get('profile', {}); prof[currentProcessType] = croppedImg; db.set('profile', prof); }
+        else { const pics = db.get('member_pics', {}); pics[currentProcessType] = croppedImg; db.set('member_pics', pics); }
         renderProfile(); closeCropper();
     }
     function closeCropper() { document.getElementById('cropperModal').style.display = 'none'; if (cropper) cropper.destroy(); }
 
     function addFinance() {
-        const date = document.getElementById('fin-date').value, amt = document.getElementById('fin-amt').value;
-        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!amt || !tags.length) return alert('資訊不完整');
+        const amt = document.getElementById('fin-amt').value; const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        if(!amt || !tags.length) return alert('不完整');
         let list = db.get('fin_list', []);
-        if (editFinId) {
-            const idx = list.findIndex(i => i.id === editFinId);
-            if (idx !== -1) list[idx] = { ...list[idx], date, members: tags, amt, currency: document.getElementById('fin-currency').value, category: document.getElementById('fin-category').value };
-            editFinId = null;
-        } else list.unshift({ id: Date.now(), date, members: tags, amt, currency: document.getElementById('fin-currency').value, category: document.getElementById('fin-category').value });
+        const entry = { id: editFinId || Date.now(), date: document.getElementById('fin-date').value, members: tags, amt, currency: document.getElementById('fin-currency').value, category: document.getElementById('fin-category').value };
+        if(editFinId) { const idx = list.findIndex(i => i.id === editFinId); list[idx] = entry; editFinId = null; } else list.unshift(entry);
         db.set('fin_list', list); resetFinanceForm(); renderFinance();
     }
-    function deleteFinance(id) { if(confirm('確定要刪除？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
-    function editFinance(id) {
-        const item = db.get('fin_list', []).find(i => i.id === id); if(!item) return;
-        syncSelectedDate(item.date); document.getElementById('fin-amt').value = item.amt;
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
-        editFinId = id; document.getElementById('btn-save-finance').innerText = "更新紀錄"; document.getElementById('btn-cancel-edit-finance').style.display = "block"; 
-        document.getElementById('mainContainer').scrollTo(0,0);
-    }
-    function resetFinanceForm() { editFinId = null; document.getElementById('fin-amt').value = ""; document.getElementById('btn-save-finance').innerText = "儲存"; document.getElementById('btn-cancel-edit-finance').style.display = "none"; document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
     function renderFinance() {
-        document.getElementById('list-finance').innerHTML = db.get('fin_list', []).map(i => `<div class="svt-card d-flex justify-content-between align-items-center"><div><div class="small text-muted">${i.date} · ${i.category}</div><div class="fw-bold text-serenity">${i.members.join(', ')}</div><div class="fw-bold">${i.currency} ${i.amt}</div></div><div class="d-flex gap-3"><i class="fas fa-pen" onclick="editFinance(${i.id})"></i><i class="fas fa-times" onclick="deleteFinance(${i.id})"></i></div></div>`).join('');
+        document.getElementById('list-finance').innerHTML = db.get('fin_list', []).map(i => `<div class="svt-card d-flex justify-content-between align-items-center"><div><div class="small text-muted">${i.date}</div><div class="fw-bold text-serenity">${i.members.join(', ')}</div><div>${i.currency} ${i.amt}</div></div><div class="d-flex gap-3"><i class="fas fa-pen" onclick="editFin(${i.id})"></i><i class="fas fa-times" onclick="delFin(${i.id})"></i></div></div>`).join('');
     }
+    function editFin(id) { const item = db.get('fin_list', []).find(i => i.id === id); document.getElementById('fin-amt').value = item.amt; editFinId = id; document.getElementById('btn-save-finance').innerText = "更新"; document.getElementById('btn-cancel-edit-finance').style.display = "block"; }
+    function delFin(id) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); }
+    function resetFinanceForm() { editFinId = null; document.getElementById('fin-amt').value = ""; document.getElementById('btn-save-finance').innerText = "儲存"; document.getElementById('btn-cancel-edit-finance').style.display = "none"; document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active')); }
 
-    function toggleDiaryForm() {
-        const c = document.getElementById('diary-form-container'), isHidden = c.style.display === 'none';
-        c.style.display = isHidden ? 'block' : 'none';
-        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消' : '<i class="fas fa-plus"></i> 新增日記';
-        if(!isHidden) resetDiaryForm();
-    }
-    function handleDiaryImage(input) { if (input.files?.[0]) { const r = new FileReader(); r.onload = e => { diaryTempImg = e.target.result; document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`; }; r.readAsDataURL(input.files[0]); } }
-    function removeDiaryImage() { diaryTempImg = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; }
-    function saveDiary() {
-        const content = document.getElementById('diary-content').value, date = document.getElementById('diary-date').value;
-        if(!content) return alert("請輸入內容");
-        let diaries = db.get('diary_list', {}); if (!Array.isArray(diaries[date])) diaries[date] = diaries[date] ? [diaries[date]] : [];
-        const entry = { content, members: Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText), img: diaryTempImg };
-        if (editingDiaryIdx !== null) diaries[date][editingDiaryIdx] = entry; else { diaries[date].push(entry); currentDiaryIndex = diaries[date].length - 1; }
-        db.set('diary_list', diaries); toggleDiaryForm(); renderDiaryContent();
-    }
-    function renderDiaryContent() {
-        const list = db.get('diary_list', {})[selectedDate] || [];
-        const display = document.getElementById('daily-merged-content'), pager = document.getElementById('diary-pagination');
-        if (list.length > 0) {
-            const data = list[currentDiaryIndex] || list[0];
-            pager.innerHTML = list.length > 1 ? `<i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i> <span>${currentDiaryIndex+1}/${list.length}</span> <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>` : "";
-            display.innerHTML = `<div class="diary-paper"><div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div><div class="diary-content-text">${data.content}</div>${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}</div>`;
-        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天沒有紀錄💎</div>`; }
-    }
-    function editDiary() {
-        const data = db.get('diary_list', {})[selectedDate][currentDiaryIndex]; editingDiaryIdx = currentDiaryIndex;
-        toggleDiaryForm(); document.getElementById('diary-content').value = data.content;
-        if(data.img) { diaryTempImg = data.img; document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`; }
-        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members?.includes(tag.innerText)));
-    }
-    function deleteDiary() { if(confirm('刪除？')) { let d = db.get('diary_list', {}); d[selectedDate].splice(currentDiaryIndex, 1); db.set('diary_list', d); currentDiaryIndex = 0; renderDiaryContent(); } }
-    function changeDiaryPage(dir) { const len = (db.get('diary_list', {})[selectedDate] || []).length; currentDiaryIndex = (currentDiaryIndex + dir + len) % len; renderDiaryContent(); }
-    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
-
-    function renderProfile() {
-        const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" }), ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
-        document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
-        if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
-        if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
-        document.getElementById('member-ratings').innerHTML = members.map(m => `<div class="svt-card d-flex align-items-center justify-content-between py-2"><div class="d-flex align-items-center"><div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div><span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span></div><div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div></div>`).join('');
-    }
-    function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
-    function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
-    function saveProfileText() { const prof = db.get('profile', {}); prof.name = document.getElementById('input-name').value || "Carat"; prof.status = document.getElementById('input-status').value || "Say the name!"; db.set('profile', prof); renderProfile(); toggleEdit(); }
     function renderWeekTable() {
         const table = document.getElementById('week-table-display'); table.innerHTML = ""; const days = ['日', '一', '二', '三', '四', '五', '六'], temp = new Date(currentWeekStart);
         for (let i = 0; i < 7; i++) {
@@ -412,7 +413,6 @@
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach((n, idx) => n.classList.toggle('active', ['finance', 'profile', 'diary'][idx] === id));
-        document.getElementById('mainContainer').scrollTo(0, 0);
     }
     function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; }
     window.onload = init;
