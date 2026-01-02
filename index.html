@@ -173,12 +173,12 @@
                 <option value="專輯">專輯 💿</option>
                 <option value="周邊">周邊 💖</option>
                 <option value="演唱會">演唱會 🎤</option>
-                <option value="生活">小卡 🫰🏻</option>
+                <option value="小卡">小卡 🫰🏻</option>
                 <option value="其他">其他 ✨</option>
             </select>
 
             <label class="small text-muted mb-1">備註</label>
-            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入備註內容">
+            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入備註...">
 
             <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
@@ -338,13 +338,13 @@
         document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
     }
 
-    function delFin(id) { if(confirm('確定刪除此筆記帳？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
+    function delFin(id) { if(confirm('確定刪除？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
 
     function resetFinanceForm() {
         editFinId = null;
         document.getElementById('fin-amt').value = "";
         document.getElementById('fin-note').value = "";
-        document.getElementById('btn-save-finance').innerText = "儲存紀錄";
+        document.getElementById('btn-save-finance').innerText = "儲存";
         document.getElementById('btn-cancel-edit-finance').style.display = "none";
         document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active'));
     }
