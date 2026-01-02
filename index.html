@@ -121,7 +121,6 @@
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
         .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
         
-        /* 成員名稱編輯輸入框樣式 */
         .member-name-input {
             border: 1px solid var(--serenity);
             border-radius: 4px;
@@ -130,7 +129,9 @@
             color: var(--serenity);
             width: 100px;
             outline: none;
+            background: rgba(255,255,255,0.8);
         }
+        .member-name-display { cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
@@ -192,10 +193,10 @@
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="fin-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
             
-            <label class="small text-muted mb-1">項目類別</label>
+            <label class="small text-muted mb-1">類別</label>
             <select id="fin-category" class="form-select mb-3">
                 <option value="專輯">專輯 💿</option>
-                <option value="周邊">💖</option>
+                <option value="周邊">周邊 💖</option>
                 <option value="演唱會">演唱會 🎤</option>
                 <option value="小卡">小卡 🫰🏻</option>
                 <option value="其他">其他 ✨</option>
@@ -277,6 +278,9 @@
     currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
     
     let cropper = null, currentProcessType = '', diaryTempImg = "", editFinId = null, currentDiaryIndex = 0, editingDiaryIdx = null;
+    
+    // 用於處理單擊與雙擊衝突的計時器
+    let clickTimer = null;
 
     function init() {
         refreshAllMemberTags();
@@ -285,11 +289,9 @@
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
     }
 
-    // 重新生成所有含有成員名稱的標籤（用於名稱同步）
     function refreshAllMemberTags() {
         const customNames = db.get('custom_member_names', {});
-        const getDisplayName = (m) => customNames[m] || m;
-        const tags = members.map(m => `<span class="member-tag" data-original="${m}" onclick="this.classList.toggle('active')">${getDisplayName(m)}</span>`).join('');
+        const tags = members.map(m => `<span class="member-tag" data-original="${m}" onclick="this.classList.toggle('active')">${customNames[m] || m}</span>`).join('');
         document.getElementById('fin-member-multi').innerHTML = tags;
         document.getElementById('diary-member-multi').innerHTML = tags;
     }
@@ -310,7 +312,6 @@
         const amt = document.getElementById('fin-amt').value;
         const cat = document.getElementById('fin-category').value;
         const note = document.getElementById('fin-note').value;
-        // 注意：儲存時保留原始 ID 以利同步，顯示時再轉譯
         const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.getAttribute('data-original'));
         
         if(!amt) return alert('請輸入金額');
@@ -376,7 +377,7 @@
         });
     }
 
-    function delFin(id) { if(confirm('確定刪除此筆記帳？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
+    function delFin(id) { if(confirm('確定刪除？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
 
     function resetFinanceForm() {
         editFinId = null;
@@ -496,7 +497,30 @@
     }
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
-    // --- 成員名稱編輯邏輯 ---
+    // --- 成員點擊邏輯優化 ---
+    function handleMemberNameClick(event, originalName) {
+        // 如果目前是在 Input 狀態，不執行單擊開啟 Modal
+        if (event.target.tagName === 'INPUT') return;
+
+        // 清除先前的計時器
+        if (clickTimer) clearTimeout(clickTimer);
+
+        // 設定延遲觸發
+        clickTimer = setTimeout(() => {
+            openMemberModal(originalName);
+            clickTimer = null;
+        }, 250); // 250ms 是區分單雙擊的理想時間
+    }
+
+    function handleMemberNameDblClick(event, originalName) {
+        // 雙擊時立即取消單擊的延遲執行
+        if (clickTimer) {
+            clearTimeout(clickTimer);
+            clickTimer = null;
+        }
+        editMemberName(originalName);
+    }
+
     function editMemberName(originalName) {
         const container = document.getElementById(`name-container-${originalName.replace(/\s+/g, '-')}`);
         const customNames = db.get('custom_member_names', {});
@@ -515,7 +539,6 @@
         }
         db.set('custom_member_names', customNames);
         
-        // 全域重新渲染
         refreshAllMemberTags();
         renderProfile();
         renderFinance();
@@ -537,9 +560,10 @@
             <div class="svt-card d-flex align-items-center justify-content-between py-2">
                 <div class="d-flex align-items-center">
                     <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div>
-                    <div id="name-container-${mId}" class="d-flex align-items-center">
-                        <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${displayName}</span>
-                        <i class="fas fa-pen ms-2 text-muted" style="cursor:pointer; font-size: 0.8rem; opacity: 0.5;" onclick="editMemberName('${m}')"></i>
+                    <div id="name-container-${mId}" class="member-name-display" 
+                         onclick="handleMemberNameClick(event, '${m}')" 
+                         ondblclick="handleMemberNameDblClick(event, '${m}')">
+                        <span class="fw-bold text-serenity">${displayName}</span>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div>
