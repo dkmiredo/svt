@@ -47,7 +47,6 @@
         .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: white; z-index: 10; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 裁切視窗優化：避開底部導覽列 */
         #cropperModal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: #000; z-index: 11000; display: none; flex-direction: column; 
@@ -75,7 +74,22 @@
         .gem-rating.active { color: var(--serenity); }
         .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; transition: 0.3s; }
 
-        .member-detail-modal { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 100%; background: #fff; z-index: 2000; display: none; overflow-y: auto; padding: 25px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        /* 核心優化：彈窗詳細資料固定在視窗中央/上方 */
+        .member-detail-modal { 
+            position: fixed; 
+            top: 0; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 100%; 
+            max-width: 500px; 
+            height: 100%; 
+            background: #fff; 
+            z-index: 5000; /* 高於底部導覽列 */
+            display: none; 
+            overflow-y: auto; 
+            padding: 25px; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.2); 
+        }
         .modal-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--serenity); object-fit: cover; margin-right: 12px; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .sync-fin-item { font-size: 0.8rem; background: #f0f4f8; padding: 8px; border-left: 3px solid var(--serenity); margin-bottom: 8px; border-radius: 4px; }
@@ -203,7 +217,6 @@
 
     <section id="page-diary" class="page-section">
         <div class="section-header">日記</div>
-        
         <div class="calendar-nav">
             <div class="cal-header">
                 <i class="fas fa-chevron-left" style="color:var(--serenity); cursor:pointer" onclick="changeWeek(-1)"></i>
