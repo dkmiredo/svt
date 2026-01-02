@@ -108,10 +108,39 @@
         .nav-center-circle { width: 52px; height: 52px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
         .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; }
 
-        #cropperModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 11000; display: none; flex-direction: column; }
-        .cropper-container-box { flex: 1; width: 100%; position: relative; overflow: hidden; }
-        .crop-controls { height: 140px; background: rgba(26, 26, 26, 0.95); display: flex; justify-content: center; align-items: flex-start; gap: 60px; padding-top: 20px; }
-        .btn-fab { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        /* 裁剪功能優化樣式 */
+        #cropperModal { 
+            position: fixed; 
+            top: 0; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 100%; 
+            max-width: 500px;
+            height: 100vh; 
+            background: #000; 
+            z-index: 10001; /* 確保高於底部導覽列 */
+            display: none; 
+            flex-direction: column; 
+        }
+        .cropper-container-box { 
+            flex: 1; 
+            width: 100%; 
+            position: relative; 
+            background: #000;
+            overflow: hidden; 
+        }
+        .crop-controls { 
+            height: 100px; 
+            background: rgba(0, 0, 0, 0.9); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 50px; 
+            padding-bottom: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-fab { width: 55px; height: 55px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: transform 0.2s; }
+        .btn-fab:active { transform: scale(0.9); }
         .btn-fab-ok { background: var(--serenity); color: white; }
         .btn-fab-cancel { background: #444; color: white; }
         
@@ -192,7 +221,6 @@
         <div class="svt-card">
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="fin-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
-            
             <label class="small text-muted mb-1">類別</label>
             <select id="fin-category" class="form-select mb-3">
                 <option value="專輯">專輯 💿</option>
@@ -201,13 +229,10 @@
                 <option value="小卡">小卡 🫰🏻</option>
                 <option value="其他">其他 ✨</option>
             </select>
-
             <label class="small text-muted mb-1">備註 (選填）</label>
             <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入...">
-
             <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
-            
             <label class="small text-muted mb-1">金額</label>
             <div class="input-group mb-3">
                 <select id="fin-currency" class="form-select" style="max-width:90px;">
@@ -217,7 +242,6 @@
                 </select>
                 <input type="number" id="fin-amt" class="form-control" placeholder="輸入...">
             </div>
-            
             <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存</button>
             <button id="btn-cancel-edit-finance" class="btn btn-sm btn-light mt-2 w-100" style="display:none;" onclick="resetFinanceForm()">取消編輯</button>
         </div>
@@ -278,8 +302,7 @@
     currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
     
     let cropper = null, currentProcessType = '', diaryTempImg = "", editFinId = null, currentDiaryIndex = 0, editingDiaryIdx = null;
-    let clickTimer = null;
-    let longPressTimer = null;
+    let clickTimer = null, longPressTimer = null;
 
     function init() {
         refreshAllMemberTags();
@@ -312,32 +335,12 @@
         const cat = document.getElementById('fin-category').value;
         const note = document.getElementById('fin-note').value;
         const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.getAttribute('data-original'));
-        
         if(!amt) return alert('請輸入金額');
         if(!tags.length) return alert('請選擇成員');
-
         let list = db.get('fin_list', []);
-        const entry = { 
-            id: editFinId || Date.now(), 
-            date: document.getElementById('fin-date').value, 
-            members: tags, 
-            amt: amt, 
-            currency: document.getElementById('fin-currency').value, 
-            category: cat,
-            note: note || ""
-        };
-
-        if(editFinId) { 
-            const idx = list.findIndex(i => i.id === editFinId); 
-            list[idx] = entry; 
-            editFinId = null; 
-        } else {
-            list.unshift(entry);
-        }
-
-        db.set('fin_list', list);
-        resetFinanceForm();
-        renderFinance();
+        const entry = { id: editFinId || Date.now(), date: document.getElementById('fin-date').value, members: tags, amt: amt, currency: document.getElementById('fin-currency').value, category: cat, note: note || "" };
+        if(editFinId) { const idx = list.findIndex(i => i.id === editFinId); list[idx] = entry; editFinId = null; } else { list.unshift(entry); }
+        db.set('fin_list', list); resetFinanceForm(); renderFinance();
     }
 
     function renderFinance() {
@@ -345,19 +348,7 @@
         const customNames = db.get('custom_member_names', {});
         document.getElementById('list-finance').innerHTML = list.map(i => {
             const displayMembers = i.members.map(m => customNames[m] || m).join(', ');
-            return `
-            <div class="svt-card d-flex justify-content-between align-items-center">
-                <div style="flex: 1;">
-                    <div class="small text-muted mb-1">${i.date} <span class="category-badge ms-1">${i.category}</span></div>
-                    <div class="fw-bold text-serenity">${displayMembers}</div>
-                    ${i.note ? `<div class="small text-muted" style="font-style: italic;"># ${i.note}</div>` : ''}
-                    <div>${i.currency} ${i.amt}</div>
-                </div>
-                <div class="d-flex gap-3 ms-2">
-                    <i class="fas fa-pen text-muted" onclick="editFin(${i.id})"></i>
-                    <i class="fas fa-trash text-muted" onclick="delFin(${i.id})"></i>
-                </div>
-            </div>`;
+            return `<div class="svt-card d-flex justify-content-between align-items-center"><div style="flex: 1;"><div class="small text-muted mb-1">${i.date} <span class="category-badge ms-1">${i.category}</span></div><div class="fw-bold text-serenity">${displayMembers}</div>${i.note ? `<div class="small text-muted" style="font-style: italic;"># ${i.note}</div>` : ''}<div>${i.currency} ${i.amt}</div></div><div class="d-flex gap-3 ms-2"><i class="fas fa-pen text-muted" onclick="editFin(${i.id})"></i><i class="fas fa-trash text-muted" onclick="delFin(${i.id})"></i></div></div>`;
         }).join('');
     }
 
@@ -371,21 +362,11 @@
         editFinId = id;
         document.getElementById('btn-save-finance').innerText = "更新紀錄";
         document.getElementById('btn-cancel-edit-finance').style.display = "block";
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
-            tag.classList.toggle('active', item.members.includes(tag.getAttribute('data-original')));
-        });
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => { tag.classList.toggle('active', item.members.includes(tag.getAttribute('data-original'))); });
     }
 
     function delFin(id) { if(confirm('確定刪除？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
-
-    function resetFinanceForm() {
-        editFinId = null;
-        document.getElementById('fin-amt').value = "";
-        document.getElementById('fin-note').value = "";
-        document.getElementById('btn-save-finance').innerText = "儲存紀錄";
-        document.getElementById('btn-cancel-edit-finance').style.display = "none";
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active'));
-    }
+    function resetFinanceForm() { editFinId = null; document.getElementById('fin-amt').value = ""; document.getElementById('fin-note').value = ""; document.getElementById('btn-save-finance').innerText = "儲存紀錄"; document.getElementById('btn-cancel-edit-finance').style.display = "none"; document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active')); }
 
     // --- 日記邏輯 ---
     function toggleDiaryForm() {
@@ -428,13 +409,7 @@
             if (currentDiaryIndex >= list.length) currentDiaryIndex = list.length - 1;
             const data = list[currentDiaryIndex];
             pager.innerHTML = list.length > 1 ? `<i class="fas fa-chevron-left" onclick="changeDiaryPage(-1)"></i> <span>${currentDiaryIndex+1} / ${list.length}</span> <i class="fas fa-chevron-right" onclick="changeDiaryPage(1)"></i>` : "";
-            display.innerHTML = `
-                <div class="diary-paper">
-                    <div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div>
-                    <div class="diary-content-text">${data.content}</div>
-                    ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${customNames[m] || m}</span>`).join('')}</div>` : ''}
-                    ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
-                </div>`;
+            display.innerHTML = `<div class="diary-paper"><div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div><div class="diary-content-text">${data.content}</div>${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${customNames[m] || m}</span>`).join('')}</div>` : ''}${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}</div>`;
         } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢～💎</div>`; }
     }
 
@@ -442,20 +417,15 @@
         const list = db.get('diary_list', {})[selectedDate];
         const data = list[currentDiaryIndex]; editingDiaryIdx = currentDiaryIndex;
         toggleDiaryForm(); document.getElementById('diary-content').value = data.content;
-        if(data.img) {
-            diaryTempImg = data.img;
-            document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`;
-        }
-        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => {
-            tag.classList.toggle('active', data.members?.includes(tag.getAttribute('data-original')));
-        });
+        if(data.img) { diaryTempImg = data.img; document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`; }
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => { tag.classList.toggle('active', data.members?.includes(tag.getAttribute('data-original'))); });
     }
 
     function deleteDiary() { if(confirm('確定刪除？')) { let d = db.get('diary_list', {}); d[selectedDate].splice(currentDiaryIndex, 1); db.set('diary_list', d); currentDiaryIndex = 0; renderDiaryContent(); } }
     function changeDiaryPage(dir) { const len = (db.get('diary_list', {})[selectedDate] || []).length; currentDiaryIndex = (currentDiaryIndex + dir + len) % len; renderDiaryContent(); }
     function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
 
-    // --- 詳細資料與頭貼優化 ---
+    // --- 通用與成員詳細功能 ---
     function openMemberModal(originalName) {
         const customNames = db.get('custom_member_names', {});
         const displayName = customNames[originalName] || originalName;
@@ -463,51 +433,24 @@
         const diaryData = db.get('diary_list', {});
         const pics = db.get('member_pics', {});
         let diaries = [];
-        Object.keys(diaryData).forEach(date => {
-            let list = Array.isArray(diaryData[date]) ? diaryData[date] : [diaryData[date]];
-            list.forEach(entry => { if (entry.members?.includes(originalName)) diaries.push({ date, ...entry }); });
-        });
+        Object.keys(diaryData).forEach(date => { let list = Array.isArray(diaryData[date]) ? diaryData[date] : [diaryData[date]]; list.forEach(entry => { if (entry.members?.includes(originalName)) diaries.push({ date, ...entry }); }); });
         document.getElementById('modal-member-name').innerText = displayName;
-        
-        const avatarHtml = pics[originalName] 
-            ? `<img src="${pics[originalName]}" onclick="openLightbox(this.src)">` 
-            : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
+        const avatarHtml = pics[originalName] ? `<img src="${pics[originalName]}" onclick="openLightbox(this.src)">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
         document.getElementById('modal-member-avatar').innerHTML = avatarHtml;
-        
         let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
-        html += finList.length ? finList.map(f => `
-            <div class="sync-fin-item d-flex justify-content-between">
-                <div>
-                    <span>${f.date} (${f.category})</span>
-                    ${f.note ? `<br><small class="text-muted"># ${f.note}</small>` : ''}
-                </div>
-                <span>${f.currency} ${f.amt}</span>
-            </div>`).join('') : '<p class="small text-muted">暫無相關紀錄</p>';
-        
+        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><div><span>${f.date} (${f.category})</span>${f.note ? `<br><small class="text-muted"># ${f.note}</small>` : ''}</div><span>${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無相關紀錄</p>';
         html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記提及📔</div>`;
-        html += diaries.length ? diaries.map(d => `
-            <div class="sync-diary-item">
-                <div style="flex: 1;">
-                    <b class="text-serenity" style="font-size:0.75rem;">${d.date}</b><br>
-                    <span style="font-size:0.85rem;">${d.content}</span>
-                </div>
-                ${d.img ? `<img src="${d.img}" class="sync-diary-thumb" onclick="openLightbox(this.src)">` : ''}
-            </div>`).join('') : '<p class="small text-muted">暫無相關提及</p>';
-        
+        html += diaries.length ? diaries.map(d => `<div class="sync-diary-item"><div style="flex: 1;"><b class="text-serenity" style="font-size:0.75rem;">${d.date}</b><br><span style="font-size:0.85rem;">${d.content}</span></div>${d.img ? `<img src="${d.img}" class="sync-diary-thumb" onclick="openLightbox(this.src)">` : ''}</div>`).join('') : '<p class="small text-muted">暫無相關提及</p>';
         document.getElementById('modal-content').innerHTML = html;
         document.getElementById('memberModal').style.display = 'block';
         document.getElementById('mainContainer').scrollTo(0, 0);
     }
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
-    // 優化後的頭貼點擊處理：有圖放大，沒圖或長按則換圖
     function handleAvatarInteraction(originalName, isLongPress) {
         const pics = db.get('member_pics', {});
-        if (isLongPress || !pics[originalName]) {
-            startPhotoProcess(originalName);
-        } else {
-            openLightbox(pics[originalName]);
-        }
+        if (isLongPress || !pics[originalName]) startPhotoProcess(originalName);
+        else openLightbox(pics[originalName]);
     }
 
     function handleProfAvatarClick() {
@@ -519,10 +462,7 @@
     function handleMemberNameClick(event, originalName) {
         if (event.target.tagName === 'INPUT') return;
         if (clickTimer) clearTimeout(clickTimer);
-        clickTimer = setTimeout(() => {
-            openMemberModal(originalName);
-            clickTimer = null;
-        }, 250);
+        clickTimer = setTimeout(() => { openMemberModal(originalName); clickTimer = null; }, 250);
     }
 
     function handleMemberNameDblClick(event, originalName) {
@@ -549,34 +489,14 @@
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" }), ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
         const customNames = db.get('custom_member_names', {});
-        
         document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
         if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
         if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
-        
         document.getElementById('member-ratings').innerHTML = members.map(m => {
             const displayName = customNames[m] || m;
             const mId = m.replace(/\s+/g, '-');
             const hasPic = !!pics[m];
-            return `
-            <div class="svt-card d-flex align-items-center justify-content-between py-2">
-                <div class="d-flex align-items-center">
-                    <div class="member-avatar-sm" 
-                         onclick="handleAvatarInteraction('${m}', false)" 
-                         onmousedown="longPressTimer = setTimeout(() => handleAvatarInteraction('${m}', true), 600)"
-                         onmouseup="clearTimeout(longPressTimer)"
-                         ontouchstart="longPressTimer = setTimeout(() => handleAvatarInteraction('${m}', true), 600)"
-                         ontouchend="clearTimeout(longPressTimer)">
-                        ${hasPic ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}
-                    </div>
-                    <div id="name-container-${mId}" class="member-name-display" 
-                         onclick="handleMemberNameClick(event, '${m}')" 
-                         ondblclick="handleMemberNameDblClick(event, '${m}')">
-                        <span class="fw-bold text-serenity">${displayName}</span>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div>
-            </div>`;
+            return `<div class="svt-card d-flex align-items-center justify-content-between py-2"><div class="d-flex align-items-center"><div class="member-avatar-sm" onclick="handleAvatarInteraction('${m}', false)" onmousedown="longPressTimer = setTimeout(() => handleAvatarInteraction('${m}', true), 600)" onmouseup="clearTimeout(longPressTimer)" ontouchstart="longPressTimer = setTimeout(() => handleAvatarInteraction('${m}', true), 600)" ontouchend="clearTimeout(longPressTimer)">${hasPic ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div><div id="name-container-${mId}" class="member-name-display" onclick="handleMemberNameClick(event, '${m}')" ondblclick="handleMemberNameDblClick(event, '${m}')"><span class="fw-bold text-serenity">${displayName}</span></div></div><div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div></div>`;
         }).join('');
     }
 
@@ -584,6 +504,7 @@
     function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
     function saveProfileText() { const prof = db.get('profile', {}); prof.name = document.getElementById('input-name').value || "Carat"; prof.status = document.getElementById('input-status').value || "Say the name!"; db.set('profile', prof); renderProfile(); toggleEdit(); }
     
+    // --- 裁剪功能相關腳本 ---
     function startPhotoProcess(type) { 
         currentProcessType = type; 
         document.getElementById('universal-uploader').click(); 
@@ -596,7 +517,19 @@
             const img = document.getElementById('image-to-crop'); img.src = event.target.result;
             document.getElementById('cropperModal').style.display = 'flex';
             if (cropper) cropper.destroy();
-            cropper = new Cropper(img, { aspectRatio: (currentProcessType==='bg'?500/160:1), viewMode: 1 });
+            cropper = new Cropper(img, { 
+                aspectRatio: (currentProcessType==='bg'?500/160:1), 
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 1,
+                restore: false,
+                guides: false,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
         };
         reader.readAsDataURL(file);
     };
