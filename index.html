@@ -47,7 +47,6 @@
         .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: white; z-index: 10; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 詳細資料偽頁面 */
         .member-detail-modal { 
             position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; 
             background: #fff; z-index: 900; display: none; overflow-y: auto; 
@@ -64,7 +63,6 @@
         .gem-rating.active { color: var(--serenity); }
         .reset-btn { font-size: 0.85rem; color: #ccc; cursor: pointer; margin-left: 10px; }
 
-        /* 日記樣式 */
         .calendar-nav { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(146,168,209,0.2); }
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .week-table { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
@@ -169,13 +167,32 @@
         <div class="svt-card">
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="fin-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
+            
+            <label class="small text-muted mb-1">類別</label>
+            <select id="fin-category" class="form-select mb-3">
+                <option value="專輯">專輯 💿</option>
+                <option value="周邊">周邊 💖</option>
+                <option value="演唱會">演唱會 🎤</option>
+                <option value="生活">小卡 🫰🏻</option>
+                <option value="其他">其他 ✨</option>
+            </select>
+
+            <label class="small text-muted mb-1">備註</label>
+            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入備註內容">
+
             <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
+            
             <label class="small text-muted mb-1">金額</label>
             <div class="input-group mb-3">
-                <select id="fin-currency" class="form-select" style="max-width:90px;"><option value="TWD">台幣</option><option value="KRW">韓元</option><option value="JPY">日圓</option></select>
-                <input type="number" id="fin-amt" class="form-control" placeholder="金額">
+                <select id="fin-currency" class="form-select" style="max-width:90px;">
+                    <option value="TWD">台幣</option>
+                    <option value="KRW">韓幣</option>
+                    <option value="JPY">日圓</option>
+                </select>
+                <input type="number" id="fin-amt" class="form-control" placeholder="輸入金額">
             </div>
+            
             <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存</button>
             <button id="btn-cancel-edit-finance" class="btn btn-sm btn-light mt-2 w-100" style="display:none;" onclick="resetFinanceForm()">取消編輯</button>
         </div>
@@ -196,7 +213,7 @@
         <div id="diary-form-container" class="svt-card" style="display:none;">
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="diary-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
-            <label class="small text-muted mb-1">提及成員</label>
+            <label class="small text-muted mb-1">成員</label>
             <div id="diary-member-multi" class="member-checkbox-group mb-3"></div>
             <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄什麼呢？"></textarea>
             <div class="d-flex align-items-center gap-3 mb-3">
@@ -204,7 +221,7 @@
                 <div id="diary-img-preview-container"></div>
             </div>
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
-            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存日記</button>
+            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存</button>
         </div>
         <div id="diary-display-area">
             <div id="diary-pagination" class="diary-pager"></div>
@@ -257,33 +274,86 @@
         renderWeekTable(); renderDiaryContent(); 
     }
 
-    // --- 詳細資料 (疊加法) ---
-    function openMemberModal(name) {
-        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
-        const diaryData = db.get('diary_list', {});
-        const pics = db.get('member_pics', {});
-        let diaries = [];
-        Object.keys(diaryData).forEach(date => {
-            let list = Array.isArray(diaryData[date]) ? diaryData[date] : [diaryData[date]];
-            list.forEach(entry => { if (entry.members?.includes(name)) diaries.push({ date, content: entry.content }); });
-        });
-        document.getElementById('modal-member-name').innerText = name;
-        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
-        let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
-        html += finList.length ? finList.map(f => `<div class="sync-fin-item d-flex justify-content-between"><span>${f.date}</span><span>${f.currency} ${f.amt}</span></div>`).join('') : '<p class="small text-muted">暫無紀錄</p>';
-        html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記提及📔</div>`;
-        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b>${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫無提及</p>';
-        document.getElementById('modal-content').innerHTML = html;
-        document.getElementById('memberModal').style.display = 'block';
-        document.getElementById('mainContainer').scrollTo(0, 0);
+    // --- 記帳功能 ---
+    function addFinance() {
+        const amt = document.getElementById('fin-amt').value;
+        const cat = document.getElementById('fin-category').value;
+        const note = document.getElementById('fin-note').value;
+        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        
+        if(!amt) return alert('請輸入金額');
+        if(!tags.length) return alert('請選擇關聯成員');
+
+        let list = db.get('fin_list', []);
+        const entry = { 
+            id: editFinId || Date.now(), 
+            date: document.getElementById('fin-date').value, 
+            members: tags, 
+            amt: amt, 
+            currency: document.getElementById('fin-currency').value, 
+            category: cat,
+            note: note || ""
+        };
+
+        if(editFinId) { 
+            const idx = list.findIndex(i => i.id === editFinId); 
+            list[idx] = entry; 
+            editFinId = null; 
+        } else {
+            list.unshift(entry);
+        }
+
+        db.set('fin_list', list);
+        resetFinanceForm();
+        renderFinance();
     }
-    function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
+
+    function renderFinance() {
+        const list = db.get('fin_list', []);
+        document.getElementById('list-finance').innerHTML = list.map(i => `
+            <div class="svt-card d-flex justify-content-between align-items-center">
+                <div style="flex: 1;">
+                    <div class="small text-muted">${i.date} <span class="badge bg-light text-dark ms-1">${i.category}</span></div>
+                    <div class="fw-bold text-serenity">${i.members.join(', ')}</div>
+                    ${i.note ? `<div class="small text-muted" style="font-style: italic;"># ${i.note}</div>` : ''}
+                    <div>${i.currency} ${i.amt}</div>
+                </div>
+                <div class="d-flex gap-3 ms-2">
+                    <i class="fas fa-pen text-muted" onclick="editFin(${i.id})"></i>
+                    <i class="fas fa-trash text-muted" onclick="delFin(${i.id})"></i>
+                </div>
+            </div>`).join('');
+    }
+
+    function editFin(id) {
+        const item = db.get('fin_list', []).find(i => i.id === id);
+        document.getElementById('fin-amt').value = item.amt;
+        document.getElementById('fin-category').value = item.category;
+        document.getElementById('fin-note').value = item.note || "";
+        document.getElementById('fin-date').value = item.date;
+        document.getElementById('fin-currency').value = item.currency;
+        editFinId = id;
+        document.getElementById('btn-save-finance').innerText = "更新紀錄";
+        document.getElementById('btn-cancel-edit-finance').style.display = "block";
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
+    }
+
+    function delFin(id) { if(confirm('確定刪除此筆記帳？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
+
+    function resetFinanceForm() {
+        editFinId = null;
+        document.getElementById('fin-amt').value = "";
+        document.getElementById('fin-note').value = "";
+        document.getElementById('btn-save-finance').innerText = "儲存紀錄";
+        document.getElementById('btn-cancel-edit-finance').style.display = "none";
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active'));
+    }
 
     // --- 日記邏輯 ---
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'), isHidden = c.style.display === 'none';
         c.style.display = isHidden ? 'block' : 'none';
-        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消' : '<i class="fas fa-plus"></i> 新增日記';
+        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 新增日記' : '<i class="fas fa-plus"></i> 新增日記';
         if(!isHidden) resetDiaryForm();
     }
 
@@ -326,7 +396,7 @@
                     ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${m}</span>`).join('')}</div>` : ''}
                     ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
                 </div>`;
-        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢💎</div>`; }
+        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢～💎</div>`; }
     }
 
     function editDiary() {
@@ -344,7 +414,35 @@
     function changeDiaryPage(dir) { const len = (db.get('diary_list', {})[selectedDate] || []).length; currentDiaryIndex = (currentDiaryIndex + dir + len) % len; renderDiaryContent(); }
     function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
 
-    // --- 其他功能 ---
+    // --- 其他主頁與通用功能 ---
+    function openMemberModal(name) {
+        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
+        const diaryData = db.get('diary_list', {});
+        const pics = db.get('member_pics', {});
+        let diaries = [];
+        Object.keys(diaryData).forEach(date => {
+            let list = Array.isArray(diaryData[date]) ? diaryData[date] : [diaryData[date]];
+            list.forEach(entry => { if (entry.members?.includes(name)) diaries.push({ date, content: entry.content }); });
+        });
+        document.getElementById('modal-member-name').innerText = name;
+        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
+        let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
+        html += finList.length ? finList.map(f => `
+            <div class="sync-fin-item d-flex justify-content-between">
+                <div>
+                    <span>${f.date} (${f.category})</span>
+                    ${f.note ? `<br><small class="text-muted"># ${f.note}</small>` : ''}
+                </div>
+                <span>${f.currency} ${f.amt}</span>
+            </div>`).join('') : '<p class="small text-muted">暫無相關紀錄</p>';
+        html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記提及📔</div>`;
+        html += diaries.length ? diaries.map(d => `<div class="p-2 bg-light rounded mb-2 small"><b>${d.date}</b><br>${d.content}</div>`).join('') : '<p class="small text-muted">暫無相關提及</p>';
+        document.getElementById('modal-content').innerHTML = html;
+        document.getElementById('memberModal').style.display = 'block';
+        document.getElementById('mainContainer').scrollTo(0, 0);
+    }
+    function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
+
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" }), ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
         document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
@@ -382,21 +480,6 @@
         renderProfile(); closeCropper();
     }
     function closeCropper() { document.getElementById('cropperModal').style.display = 'none'; if (cropper) cropper.destroy(); }
-
-    function addFinance() {
-        const amt = document.getElementById('fin-amt').value; const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!amt || !tags.length) return alert('不完整');
-        let list = db.get('fin_list', []);
-        const entry = { id: editFinId || Date.now(), date: document.getElementById('fin-date').value, members: tags, amt, currency: document.getElementById('fin-currency').value, category: document.getElementById('fin-category').value };
-        if(editFinId) { const idx = list.findIndex(i => i.id === editFinId); list[idx] = entry; editFinId = null; } else list.unshift(entry);
-        db.set('fin_list', list); resetFinanceForm(); renderFinance();
-    }
-    function renderFinance() {
-        document.getElementById('list-finance').innerHTML = db.get('fin_list', []).map(i => `<div class="svt-card d-flex justify-content-between align-items-center"><div><div class="small text-muted">${i.date}</div><div class="fw-bold text-serenity">${i.members.join(', ')}</div><div>${i.currency} ${i.amt}</div></div><div class="d-flex gap-3"><i class="fas fa-pen" onclick="editFin(${i.id})"></i><i class="fas fa-times" onclick="delFin(${i.id})"></i></div></div>`).join('');
-    }
-    function editFin(id) { const item = db.get('fin_list', []).find(i => i.id === id); document.getElementById('fin-amt').value = item.amt; editFinId = id; document.getElementById('btn-save-finance').innerText = "更新"; document.getElementById('btn-cancel-edit-finance').style.display = "block"; }
-    function delFin(id) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); }
-    function resetFinanceForm() { editFinId = null; document.getElementById('fin-amt').value = ""; document.getElementById('btn-save-finance').innerText = "儲存"; document.getElementById('btn-cancel-edit-finance').style.display = "none"; document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active')); }
 
     function renderWeekTable() {
         const table = document.getElementById('week-table-display'); table.innerHTML = ""; const days = ['日', '一', '二', '三', '四', '五', '六'], temp = new Date(currentWeekStart);
