@@ -185,16 +185,16 @@
             <label class="small text-muted mb-1">項目類別</label>
             <select id="fin-category" class="form-select mb-3">
                 <option value="專輯">專輯 💿</option>
-                <option value="周邊">周邊 🎀</option>
+                <option value="周邊">💖</option>
                 <option value="演唱會">演唱會 🎤</option>
-                <option value="生活">生活 🏡</option>
+                <option value="小卡">小卡 🫰🏻</option>
                 <option value="其他">其他 ✨</option>
             </select>
 
-            <label class="small text-muted mb-1">備註 (非必填)</label>
-            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入備註內容">
+            <label class="small text-muted mb-1">備註 (選填）</label>
+            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入...">
 
-            <label class="small text-muted mb-1">關聯成員</label>
+            <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
             
             <label class="small text-muted mb-1">金額</label>
@@ -204,10 +204,10 @@
                     <option value="KRW">韓元</option>
                     <option value="JPY">日圓</option>
                 </select>
-                <input type="number" id="fin-amt" class="form-control" placeholder="輸入金額">
+                <input type="number" id="fin-amt" class="form-control" placeholder="輸入...">
             </div>
             
-            <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存紀錄</button>
+            <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存</button>
             <button id="btn-cancel-edit-finance" class="btn btn-sm btn-light mt-2 w-100" style="display:none;" onclick="resetFinanceForm()">取消編輯</button>
         </div>
         <div id="list-finance"></div>
@@ -227,15 +227,15 @@
         <div id="diary-form-container" class="svt-card" style="display:none;">
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="diary-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
-            <label class="small text-muted mb-1">提及成員</label>
+            <label class="small text-muted mb-1">成員</label>
             <div id="diary-member-multi" class="member-checkbox-group mb-3"></div>
-            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄什麼呢？"></textarea>
+            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天..."></textarea>
             <div class="d-flex align-items-center gap-3 mb-3">
                 <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('diary-img-input').click()"><i class="fas fa-camera"></i> 上傳圖片</button>
                 <div id="diary-img-preview-container"></div>
             </div>
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
-            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存日記</button>
+            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存</button>
         </div>
         <div id="diary-display-area">
             <div id="diary-pagination" class="diary-pager"></div>
@@ -296,7 +296,7 @@
         const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
         
         if(!amt) return alert('請輸入金額');
-        if(!tags.length) return alert('請選擇關聯成員');
+        if(!tags.length) return alert('請選擇成員');
 
         let list = db.get('fin_list', []);
         const entry = { 
@@ -367,7 +367,7 @@
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'), isHidden = c.style.display === 'none';
         c.style.display = isHidden ? 'block' : 'none';
-        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消' : '<i class="fas fa-plus"></i> 新增日記';
+        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消新增' : '<i class="fas fa-plus"></i> 新增日記';
         if(!isHidden) resetDiaryForm();
     }
 
@@ -386,7 +386,7 @@
     function saveDiary() {
         const content = document.getElementById('diary-content').value, date = document.getElementById('diary-date').value;
         const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!content) return alert("內容不能為空");
+        if(!content) return alert("記得填寫內容～");
         let diaries = db.get('diary_list', {});
         if (!Array.isArray(diaries[date])) diaries[date] = diaries[date] ? [diaries[date]] : [];
         const entry = { content, members: tags, img: diaryTempImg };
@@ -410,7 +410,7 @@
                     ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${m}</span>`).join('')}</div>` : ''}
                     ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
                 </div>`;
-        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢💎</div>`; }
+        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢～💎</div>`; }
     }
 
     function editDiary() {
@@ -449,7 +449,7 @@
                     ${f.note ? `<br><small class="text-muted"># ${f.note}</small>` : ''}
                 </div>
                 <span>${f.currency} ${f.amt}</span>
-            </div>`).join('') : '<p class="small text-muted">暫無紀錄</p>';
+            </div>`).join('') : '<p class="small text-muted">暫無相關紀錄</p>';
         
         html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記提及📔</div>`;
         html += diaries.length ? diaries.map(d => `
@@ -459,7 +459,7 @@
                     <span style="font-size:0.85rem;">${d.content}</span>
                 </div>
                 ${d.img ? `<img src="${d.img}" class="sync-diary-thumb" onclick="openLightbox(this.src)">` : ''}
-            </div>`).join('') : '<p class="small text-muted">暫無提及</p>';
+            </div>`).join('') : '<p class="small text-muted">暫無相關提及</p>';
         
         document.getElementById('modal-content').innerHTML = html;
         document.getElementById('memberModal').style.display = 'block';
