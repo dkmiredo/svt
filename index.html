@@ -29,7 +29,7 @@
             height: 100vh; 
             overflow-y: auto; 
             position: relative; 
-            padding-bottom: 110px; 
+            padding-bottom: 80px; 
             -webkit-overflow-scrolling: touch; 
         }
         
@@ -42,6 +42,17 @@
         
         .text-serenity { color: var(--serenity) !important; }
         .bg-serenity { background-color: var(--serenity) !important; }
+        
+        .category-badge { 
+            background-color: var(--rose-quartz); 
+            color: white; 
+            padding: 2px 10px; 
+            border-radius: 20px; 
+            font-size: 0.75rem; 
+            font-weight: 500;
+            display: inline-block;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
 
         .profile-header { height: 160px; background: linear-gradient(45deg, var(--rose-quartz), var(--serenity)); background-size: cover; background-position: center; position: relative; border-bottom: 4px solid white; cursor: pointer; }
         .profile-avatar-container { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; left: 20px; background: white; z-index: 10; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -89,18 +100,18 @@
         .bottom-nav { 
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; 
             background: white; display: flex; justify-content: space-around; align-items: center; 
-            padding: 8px 0; border-top: 1px solid #eee; z-index: 1000; height: 75px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            padding: 4px 0; border-top: 1px solid #eee; z-index: 1000; height: 60px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
-        .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.75rem; }
+        .nav-item { color: #ccc; text-align: center; flex: 1; cursor: pointer; font-size: 0.7rem; }
         .nav-item.active { color: var(--serenity); }
-        .nav-center { margin-top: -35px !important; }
-        .nav-center-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
+        .nav-center { margin-top: -30px !important; }
+        .nav-center-circle { width: 52px; height: 52px; border-radius: 50%; background: var(--serenity); color: white; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto; }
         .btn-svt { background: var(--serenity); color: white; border-radius: 50px; border: 2px solid var(--serenity); padding: 8px 20px; font-weight: bold; width: 100%; }
 
         #cropperModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 11000; display: none; flex-direction: column; }
         .cropper-container-box { flex: 1; width: 100%; position: relative; overflow: hidden; }
-        .crop-controls { height: 160px; background: rgba(26, 26, 26, 0.95); display: flex; justify-content: center; align-items: flex-start; gap: 60px; padding-top: 25px; }
-        .btn-fab { width: 65px; height: 65px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .crop-controls { height: 140px; background: rgba(26, 26, 26, 0.95); display: flex; justify-content: center; align-items: flex-start; gap: 60px; padding-top: 20px; }
+        .btn-fab { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
         .btn-fab-ok { background: var(--serenity); color: white; }
         .btn-fab-cancel { background: #444; color: white; }
         
@@ -109,6 +120,17 @@
         .img-remove-btn { position: absolute; top: -5px; right: -5px; background: white; color: #ff5e5e; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; border: none; }
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
         .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
+        
+        /* 成員名稱編輯輸入框樣式 */
+        .member-name-input {
+            border: 1px solid var(--serenity);
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-size: 0.9rem;
+            color: var(--serenity);
+            width: 100px;
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -173,16 +195,16 @@
             <label class="small text-muted mb-1">項目類別</label>
             <select id="fin-category" class="form-select mb-3">
                 <option value="專輯">專輯 💿</option>
-                <option value="周邊">周邊 🎀</option>
+                <option value="周邊">💖</option>
                 <option value="演唱會">演唱會 🎤</option>
-                <option value="生活">生活 🏡</option>
+                <option value="小卡">小卡 🫰🏻</option>
                 <option value="其他">其他 ✨</option>
             </select>
 
-            <label class="small text-muted mb-1">備註 (非必填)</label>
-            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入備註內容">
+            <label class="small text-muted mb-1">備註 (選填）</label>
+            <input type="text" id="fin-note" class="form-control mb-3" placeholder="輸入...">
 
-            <label class="small text-muted mb-1">關聯成員</label>
+            <label class="small text-muted mb-1">成員</label>
             <div id="fin-member-multi" class="member-checkbox-group mb-3"></div>
             
             <label class="small text-muted mb-1">金額</label>
@@ -192,10 +214,10 @@
                     <option value="KRW">韓元</option>
                     <option value="JPY">日圓</option>
                 </select>
-                <input type="number" id="fin-amt" class="form-control" placeholder="輸入金額">
+                <input type="number" id="fin-amt" class="form-control" placeholder="輸入...">
             </div>
             
-            <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存紀錄</button>
+            <button id="btn-save-finance" class="btn btn-svt" onclick="addFinance()">儲存</button>
             <button id="btn-cancel-edit-finance" class="btn btn-sm btn-light mt-2 w-100" style="display:none;" onclick="resetFinanceForm()">取消編輯</button>
         </div>
         <div id="list-finance"></div>
@@ -215,15 +237,15 @@
         <div id="diary-form-container" class="svt-card" style="display:none;">
             <label class="small text-muted mb-1">日期</label>
             <input type="date" id="diary-date" class="form-control mb-3" onchange="syncSelectedDate(this.value)">
-            <label class="small text-muted mb-1">提及成員</label>
+            <label class="small text-muted mb-1">成員</label>
             <div id="diary-member-multi" class="member-checkbox-group mb-3"></div>
-            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天要紀錄什麼呢？"></textarea>
+            <textarea id="diary-content" class="form-control mb-3" rows="3" placeholder="今天..."></textarea>
             <div class="d-flex align-items-center gap-3 mb-3">
                 <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('diary-img-input').click()"><i class="fas fa-camera"></i> 上傳圖片</button>
                 <div id="diary-img-preview-container"></div>
             </div>
             <input type="file" id="diary-img-input" style="display:none" accept="image/*" onchange="handleDiaryImage(this)">
-            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存日記</button>
+            <button id="btn-save-diary" class="btn btn-svt" onclick="saveDiary()">儲存</button>
         </div>
         <div id="diary-display-area">
             <div id="diary-pagination" class="diary-pager"></div>
@@ -235,7 +257,7 @@
 <nav class="bottom-nav">
     <div class="nav-item" onclick="showPage('finance')"><i class="fas fa-wallet"></i><br>記帳</div>
     <div class="nav-item active nav-center" onclick="showPage('profile')">
-        <div class="nav-center-circle"><i class="fas fa-gem" style="font-size:1.5rem;"></i></div>
+        <div class="nav-center-circle"><i class="fas fa-gem" style="font-size:1.3rem;"></i></div>
         <span>主頁</span>
     </div>
     <div class="nav-item" onclick="showPage('diary')"><i class="fas fa-book"></i><br>日記</div>
@@ -257,12 +279,19 @@
     let cropper = null, currentProcessType = '', diaryTempImg = "", editFinId = null, currentDiaryIndex = 0, editingDiaryIdx = null;
 
     function init() {
-        const tags = members.map(m => `<span class="member-tag" onclick="this.classList.toggle('active')">${m}</span>`).join('');
-        document.getElementById('fin-member-multi').innerHTML = tags;
-        document.getElementById('diary-member-multi').innerHTML = tags;
+        refreshAllMemberTags();
         document.getElementById('fin-date').value = selectedDate;
         document.getElementById('diary-date').value = selectedDate;
         renderWeekTable(); renderDiaryContent(); renderProfile(); renderFinance();
+    }
+
+    // 重新生成所有含有成員名稱的標籤（用於名稱同步）
+    function refreshAllMemberTags() {
+        const customNames = db.get('custom_member_names', {});
+        const getDisplayName = (m) => customNames[m] || m;
+        const tags = members.map(m => `<span class="member-tag" data-original="${m}" onclick="this.classList.toggle('active')">${getDisplayName(m)}</span>`).join('');
+        document.getElementById('fin-member-multi').innerHTML = tags;
+        document.getElementById('diary-member-multi').innerHTML = tags;
     }
 
     function syncSelectedDate(date) { 
@@ -281,10 +310,11 @@
         const amt = document.getElementById('fin-amt').value;
         const cat = document.getElementById('fin-category').value;
         const note = document.getElementById('fin-note').value;
-        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.innerText);
+        // 注意：儲存時保留原始 ID 以利同步，顯示時再轉譯
+        const tags = Array.from(document.querySelectorAll('#fin-member-multi .member-tag.active')).map(el => el.getAttribute('data-original'));
         
         if(!amt) return alert('請輸入金額');
-        if(!tags.length) return alert('請選擇關聯成員');
+        if(!tags.length) return alert('請選擇成員');
 
         let list = db.get('fin_list', []);
         const entry = { 
@@ -312,11 +342,14 @@
 
     function renderFinance() {
         const list = db.get('fin_list', []);
-        document.getElementById('list-finance').innerHTML = list.map(i => `
+        const customNames = db.get('custom_member_names', {});
+        document.getElementById('list-finance').innerHTML = list.map(i => {
+            const displayMembers = i.members.map(m => customNames[m] || m).join(', ');
+            return `
             <div class="svt-card d-flex justify-content-between align-items-center">
                 <div style="flex: 1;">
-                    <div class="small text-muted">${i.date} <span class="badge bg-light text-dark ms-1">${i.category}</span></div>
-                    <div class="fw-bold text-serenity">${i.members.join(', ')}</div>
+                    <div class="small text-muted mb-1">${i.date} <span class="category-badge ms-1">${i.category}</span></div>
+                    <div class="fw-bold text-serenity">${displayMembers}</div>
                     ${i.note ? `<div class="small text-muted" style="font-style: italic;"># ${i.note}</div>` : ''}
                     <div>${i.currency} ${i.amt}</div>
                 </div>
@@ -324,7 +357,8 @@
                     <i class="fas fa-pen text-muted" onclick="editFin(${i.id})"></i>
                     <i class="fas fa-trash text-muted" onclick="delFin(${i.id})"></i>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     function editFin(id) {
@@ -337,7 +371,9 @@
         editFinId = id;
         document.getElementById('btn-save-finance').innerText = "更新紀錄";
         document.getElementById('btn-cancel-edit-finance').style.display = "block";
-        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', item.members.includes(tag.innerText)));
+        document.querySelectorAll('#fin-member-multi .member-tag').forEach(tag => {
+            tag.classList.toggle('active', item.members.includes(tag.getAttribute('data-original')));
+        });
     }
 
     function delFin(id) { if(confirm('確定刪除此筆記帳？')) { db.set('fin_list', db.get('fin_list', []).filter(i => i.id !== id)); renderFinance(); } }
@@ -355,7 +391,7 @@
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'), isHidden = c.style.display === 'none';
         c.style.display = isHidden ? 'block' : 'none';
-        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消' : '<i class="fas fa-plus"></i> 新增日記';
+        document.getElementById('add-diary-btn').innerHTML = isHidden ? '<i class="fas fa-times"></i> 取消新增' : '<i class="fas fa-plus"></i> 新增日記';
         if(!isHidden) resetDiaryForm();
     }
 
@@ -373,8 +409,8 @@
 
     function saveDiary() {
         const content = document.getElementById('diary-content').value, date = document.getElementById('diary-date').value;
-        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.innerText);
-        if(!content) return alert("內容不能為空");
+        const tags = Array.from(document.querySelectorAll('#diary-member-multi .member-tag.active')).map(el => el.getAttribute('data-original'));
+        if(!content) return alert("記得填寫內容～");
         let diaries = db.get('diary_list', {});
         if (!Array.isArray(diaries[date])) diaries[date] = diaries[date] ? [diaries[date]] : [];
         const entry = { content, members: tags, img: diaryTempImg };
@@ -385,6 +421,7 @@
 
     function renderDiaryContent() {
         const diaries = db.get('diary_list', {}); let list = diaries[selectedDate] || [];
+        const customNames = db.get('custom_member_names', {});
         if (!Array.isArray(list)) list = [list];
         const display = document.getElementById('daily-merged-content'), pager = document.getElementById('diary-pagination');
         if (list.length > 0) {
@@ -395,10 +432,10 @@
                 <div class="diary-paper">
                     <div class="diary-actions"><i class="fas fa-pen" onclick="editDiary()"></i><i class="fas fa-times" onclick="deleteDiary()"></i></div>
                     <div class="diary-content-text">${data.content}</div>
-                    ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${m}</span>`).join('')}</div>` : ''}
+                    ${data.members?.length ? `<div style="margin-left:25px; margin-top:10px;">${data.members.map(m => `<span class="badge bg-serenity text-white me-1 small">${customNames[m] || m}</span>`).join('')}</div>` : ''}
                     ${data.img ? `<img src="${data.img}" class="diary-thumb" onclick="openLightbox(this.src)">` : ''}
                 </div>`;
-        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢💎</div>`; }
+        } else { pager.innerHTML = ""; display.innerHTML = `<div class="text-center p-5 text-white">這天還沒有紀錄呢～💎</div>`; }
     }
 
     function editDiary() {
@@ -409,25 +446,29 @@
             diaryTempImg = data.img;
             document.getElementById('diary-img-preview-container').innerHTML = `<div class="img-preview-container"><img src="${diaryTempImg}" class="img-preview-sm"><button class="img-remove-btn" onclick="removeDiaryImage()">&times;</button></div>`;
         }
-        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.toggle('active', data.members?.includes(tag.innerText)));
+        document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => {
+            tag.classList.toggle('active', data.members?.includes(tag.getAttribute('data-original')));
+        });
     }
 
     function deleteDiary() { if(confirm('確定刪除？')) { let d = db.get('diary_list', {}); d[selectedDate].splice(currentDiaryIndex, 1); db.set('diary_list', d); currentDiaryIndex = 0; renderDiaryContent(); } }
     function changeDiaryPage(dir) { const len = (db.get('diary_list', {})[selectedDate] || []).length; currentDiaryIndex = (currentDiaryIndex + dir + len) % len; renderDiaryContent(); }
-    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag.active').forEach(tag => tag.classList.remove('active')); }
+    function resetDiaryForm() { editingDiaryIdx = null; diaryTempImg = ""; document.getElementById('diary-content').value = ""; document.getElementById('diary-img-preview-container').innerHTML = ""; document.querySelectorAll('#diary-member-multi .member-tag').forEach(tag => tag.classList.remove('active')); }
 
     // --- 其他主頁與通用功能 ---
-    function openMemberModal(name) {
-        const finList = db.get('fin_list', []).filter(i => i.members.includes(name));
+    function openMemberModal(originalName) {
+        const customNames = db.get('custom_member_names', {});
+        const displayName = customNames[originalName] || originalName;
+        const finList = db.get('fin_list', []).filter(i => i.members.includes(originalName));
         const diaryData = db.get('diary_list', {});
         const pics = db.get('member_pics', {});
         let diaries = [];
         Object.keys(diaryData).forEach(date => {
             let list = Array.isArray(diaryData[date]) ? diaryData[date] : [diaryData[date]];
-            list.forEach(entry => { if (entry.members?.includes(name)) diaries.push({ date, ...entry }); });
+            list.forEach(entry => { if (entry.members?.includes(originalName)) diaries.push({ date, ...entry }); });
         });
-        document.getElementById('modal-member-name').innerText = name;
-        document.getElementById('modal-member-avatar').innerHTML = pics[name] ? `<img src="${pics[name]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
+        document.getElementById('modal-member-name').innerText = displayName;
+        document.getElementById('modal-member-avatar').innerHTML = pics[originalName] ? `<img src="${pics[originalName]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
         
         let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
         html += finList.length ? finList.map(f => `
@@ -437,7 +478,7 @@
                     ${f.note ? `<br><small class="text-muted"># ${f.note}</small>` : ''}
                 </div>
                 <span>${f.currency} ${f.amt}</span>
-            </div>`).join('') : '<p class="small text-muted">暫無紀錄</p>';
+            </div>`).join('') : '<p class="small text-muted">暫無相關紀錄</p>';
         
         html += `<div class="fw-bold mt-4 mb-2 text-serenity">日記提及📔</div>`;
         html += diaries.length ? diaries.map(d => `
@@ -447,7 +488,7 @@
                     <span style="font-size:0.85rem;">${d.content}</span>
                 </div>
                 ${d.img ? `<img src="${d.img}" class="sync-diary-thumb" onclick="openLightbox(this.src)">` : ''}
-            </div>`).join('') : '<p class="small text-muted">暫無提及</p>';
+            </div>`).join('') : '<p class="small text-muted">暫無相關提及</p>';
         
         document.getElementById('modal-content').innerHTML = html;
         document.getElementById('memberModal').style.display = 'block';
@@ -455,29 +496,70 @@
     }
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
+    // --- 成員名稱編輯邏輯 ---
+    function editMemberName(originalName) {
+        const container = document.getElementById(`name-container-${originalName.replace(/\s+/g, '-')}`);
+        const customNames = db.get('custom_member_names', {});
+        const currentName = customNames[originalName] || originalName;
+        
+        container.innerHTML = `<input type="text" class="member-name-input" value="${currentName}" onblur="saveMemberName('${originalName}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">`;
+        container.querySelector('input').focus();
+    }
+
+    function saveMemberName(originalName, newName) {
+        const customNames = db.get('custom_member_names', {});
+        if(newName && newName.trim() !== "") {
+            customNames[originalName] = newName.trim();
+        } else {
+            delete customNames[originalName];
+        }
+        db.set('custom_member_names', customNames);
+        
+        // 全域重新渲染
+        refreshAllMemberTags();
+        renderProfile();
+        renderFinance();
+        renderDiaryContent();
+    }
+
     function renderProfile() {
         const prof = db.get('profile', { name: "Carat", status: "Say the name!", avatar: "", bg: "" }), ratings = db.get('ratings', {}), pics = db.get('member_pics', {});
+        const customNames = db.get('custom_member_names', {});
+        
         document.getElementById('display-name').innerText = prof.name; document.getElementById('display-status').innerText = prof.status;
         if(prof.avatar) document.getElementById('prof-avatar-content').innerHTML = `<img src="${prof.avatar}">`;
         if(prof.bg) document.getElementById('prof-bg').style.backgroundImage = `url(${prof.bg})`;
-        document.getElementById('member-ratings').innerHTML = members.map(m => `
+        
+        document.getElementById('member-ratings').innerHTML = members.map(m => {
+            const displayName = customNames[m] || m;
+            const mId = m.replace(/\s+/g, '-');
+            return `
             <div class="svt-card d-flex align-items-center justify-content-between py-2">
                 <div class="d-flex align-items-center">
                     <div class="member-avatar-sm" onclick="startPhotoProcess('${m}')">${pics[m] ? `<img src="${pics[m]}">` : `<i class="fas fa-gem" style="color:white; font-size:0.8rem;"></i>`}</div>
-                    <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${m}</span>
+                    <div id="name-container-${mId}" class="d-flex align-items-center">
+                        <span class="fw-bold text-serenity" style="cursor:pointer;" onclick="openMemberModal('${m}')">${displayName}</span>
+                        <i class="fas fa-pen ms-2 text-muted" style="cursor:pointer; font-size: 0.8rem; opacity: 0.5;" onclick="editMemberName('${m}')"></i>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center">${[1,2,3,4,5].map(n => `<i class="fas fa-gem gem-rating ${(ratings[m]||0) >= n ? 'active' : ''}" onclick="updateRate('${m}', ${n})"></i>`).join('')}<i class="fas fa-sync-alt reset-btn" onclick="updateRate('${m}', 0)"></i></div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
+
     function updateRate(m, s) { const r = db.get('ratings', {}); r[m] = s; db.set('ratings', r); renderProfile(); }
     function toggleEdit() { const f = document.getElementById('edit-fields'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
     function saveProfileText() { const prof = db.get('profile', {}); prof.name = document.getElementById('input-name').value || "Carat"; prof.status = document.getElementById('input-status').value || "Say the name!"; db.set('profile', prof); renderProfile(); toggleEdit(); }
     
-    function startPhotoProcess(type) { currentProcessType = type; document.getElementById('universal-uploader').click(); }
+    function startPhotoProcess(type) { 
+        currentProcessType = type; 
+        document.getElementById('universal-uploader').click(); 
+    }
     document.getElementById('universal-uploader').onchange = function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(event) {
+            document.getElementById('mainContainer').scrollTo(0, 0);
             const img = document.getElementById('image-to-crop'); img.src = event.target.result;
             document.getElementById('cropperModal').style.display = 'flex';
             if (cropper) cropper.destroy();
@@ -485,6 +567,7 @@
         };
         reader.readAsDataURL(file);
     };
+
     function confirmCrop() {
         const croppedImg = cropper.getCroppedCanvas().toDataURL('image/jpeg', 0.8);
         if (['bg','avatar'].includes(currentProcessType)) { const prof = db.get('profile', {}); prof[currentProcessType] = croppedImg; db.set('profile', prof); }
@@ -507,7 +590,10 @@
         closeMemberModal();
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById('page-' + id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach((n, idx) => n.classList.toggle('active', ['finance', 'profile', 'diary'][idx] === id));
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems[0].classList.toggle('active', id === 'finance');
+        navItems[1].classList.toggle('active', id === 'profile');
+        navItems[2].classList.toggle('active', id === 'diary');
     }
     function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display = 'flex'; }
     window.onload = init;
