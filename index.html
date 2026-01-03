@@ -64,7 +64,8 @@
             padding: 25px 25px 90px 25px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
             animation: fadeIn 0.3s ease;
         }
-        .modal-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--serenity); object-fit: cover; margin-right: 12px; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        /* 優化：新增 cursor: pointer 提示可點擊 */
+        .modal-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--serenity); object-fit: cover; margin-right: 12px; background: linear-gradient(135deg, var(--rose-quartz), var(--serenity)); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .sync-fin-item { font-size: 0.8rem; background: #f0f4f8; padding: 8px; border-left: 3px solid var(--serenity); margin-bottom: 8px; border-radius: 4px; }
         .sync-diary-item { font-size: 0.85rem; background: #fffafb; padding: 10px; border-radius: 10px; border: 1px solid #f9ecee; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
@@ -118,7 +119,7 @@
         .img-preview-container { position: relative; display: inline-block; }
         .img-preview-sm { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-top: 5px; }
         .img-remove-btn { position: absolute; top: -5px; right: -5px; background: white; color: #ff5e5e; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; border: none; }
-        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; cursor: zoom-out; }
         .lightbox img { max-width: 90%; max-height: 85%; border-radius: 10px; border: 4px solid white; }
         
         .member-name-input {
@@ -152,7 +153,7 @@
     <div id="memberModal" class="member-detail-modal">
         <span class="float-end fs-2" onclick="closeMemberModal()" style="cursor:pointer;">&times;</span>
         <div class="d-flex align-items-center mt-4 mb-2">
-            <div id="modal-member-avatar" class="modal-avatar"></div>
+            <div id="modal-member-avatar" class="modal-avatar" onclick="handleModalAvatarClick()"></div>
             <h3 id="modal-member-name" class="fw-bold m-0" style="color:var(--serenity)"></h3>
         </div>
         <hr>
@@ -393,7 +394,7 @@
         document.querySelectorAll('#fin-member-multi .member-tag').forEach(t => t.classList.remove('active'));
     }
 
-    // --- 日記邏輯 (修正儲存問題) ---
+    // --- 日記邏輯 ---
     function toggleDiaryForm() {
         const c = document.getElementById('diary-form-container'), isHidden = c.style.display === 'none';
         c.style.display = isHidden ? 'block' : 'none';
@@ -405,11 +406,10 @@
         if (input.files?.[0]) {
             const r = new FileReader();
             r.onload = e => { 
-                // 壓縮圖片 Base64 以防儲存失敗
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const max_size = 800; // 限制最大寬度
+                    const max_size = 800; 
                     let w = img.width, h = img.height;
                     if (w > h && w > max_size) { h *= max_size / w; w = max_size; }
                     else if (h > max_size) { w *= max_size / h; h = max_size; }
@@ -433,7 +433,6 @@
         if(!content) return alert("記得填寫內容～");
         
         let diaries = db.get('diary_list', {});
-        // 確保該日期的格式一定是陣列
         if (!diaries[date]) {
             diaries[date] = [];
         } else if (!Array.isArray(diaries[date])) {
@@ -454,7 +453,7 @@
         }
 
         db.set('diary_list', diaries);
-        selectedDate = date; // 確保畫面同步到存檔日期
+        selectedDate = date; 
         toggleDiaryForm(); 
         renderDiaryContent();
     }
@@ -553,6 +552,8 @@
             list.forEach(entry => { if (entry && entry.members?.includes(originalName)) diaries.push({ date, ...entry }); });
         });
         document.getElementById('modal-member-name').innerText = displayName;
+        
+        // 渲染詳細頁面頭貼
         document.getElementById('modal-member-avatar').innerHTML = pics[originalName] ? `<img src="${pics[originalName]}">` : `<i class="fas fa-gem" style="color:var(--serenity); font-size:1.5rem;"></i>`;
         
         let html = `<div class="fw-bold mt-3 mb-2 text-serenity">記帳紀錄 💳</div>`;
@@ -579,6 +580,15 @@
         document.getElementById('memberModal').style.display = 'block';
         document.getElementById('mainContainer').scrollTo(0, 0);
     }
+
+    // 優化：處理詳細資料頁面的頭貼點擊
+    function handleModalAvatarClick() {
+        const avatarImg = document.querySelector('#modal-member-avatar img');
+        if (avatarImg) {
+            openLightbox(avatarImg.src);
+        }
+    }
+
     function closeMemberModal() { document.getElementById('memberModal').style.display = 'none'; }
 
     function handleMemberNameClick(event, originalName) {
